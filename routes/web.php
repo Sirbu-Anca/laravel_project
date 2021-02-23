@@ -1,6 +1,8 @@
 <?php
 
 
+use App\Http\Controllers\Front\CartController;
+use App\Http\Controllers\Front\ProductController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -23,8 +25,21 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])
+    ->name('home');
 
 Auth::routes();
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])
+    ->name('home');
+
+Route::get('/index', [ProductController::class, 'index'])
+    ->name('products.index');
+
+Route::get('/products/{products}', [ProductController::class, 'show'])
+    ->name('products.show');
+
+Route::post('/cart', [CartController::class, 'store'])
+    ->name('cart.store');
+
+
