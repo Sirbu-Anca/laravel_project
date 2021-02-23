@@ -4,10 +4,9 @@
     <h3>{{__('Products')}}</h3>
     <table border="1px bold black">
         @foreach($products as $product)
-
             <tr>
                 <th>
-                   <img src="{{ $product->image_name }}" alt="Product photo">
+                    <img src="{{ $product->image_name }}" alt="Product photo">
                 </th>
                 <td>
                     <div>{{ $product->title }}</div>
