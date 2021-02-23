@@ -41,4 +41,7 @@ Route::prefix('cart')
 
         Route::delete('/{product}', [CartController::class, 'destroy'])
             ->name('cart.destroy');
+
+        Route::post('/', [CartController::class, 'sendEmail'])
+            ->name('email.store');
     });
