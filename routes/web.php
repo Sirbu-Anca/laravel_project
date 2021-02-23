@@ -28,18 +28,17 @@ Auth::routes();
 Route::get('/home', [HomeController::class, 'index'])
     ->name('home');
 
-Auth::routes();
-
-Route::get('/home', [HomeController::class, 'index'])
-    ->name('home');
-
 Route::get('/index', [ProductController::class, 'index'])
     ->name('products.index');
 
-Route::get('/products/{products}', [ProductController::class, 'show'])
-    ->name('products.show');
+Route::prefix('cart')
+    ->group(function () {
+        Route::post('/', [CartController::class, 'store'])
+            ->name('cart.store');
 
-Route::post('/cart', [CartController::class, 'store'])
-    ->name('cart.store');
+        Route::get('/', [CartController::class, 'index'])
+            ->name('cart.index');
 
-
+        Route::delete('/{product}', [CartController::class, 'destroy'])
+            ->name('cart.destroy');
+    });
