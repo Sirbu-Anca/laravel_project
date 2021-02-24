@@ -33,7 +33,7 @@ Route::get('/index', [ProductController::class, 'index'])
 
 Route::prefix('cart')
     ->group(function () {
-        Route::post('/', [CartController::class, 'store'])
+        Route::post('/cart', [CartController::class, 'store'])
             ->name('cart.store');
 
         Route::get('/', [CartController::class, 'index'])

@@ -14,7 +14,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::query()->get();
-        if (session()->has('cart')) {
+        if (count(session()->get('cart', []))) {
             $cartIds = array_values(session()->get('cart'));
             $products = Product::query()
                 ->whereNotIn('id', $cartIds)
