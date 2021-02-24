@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\Back\ProductController as BackProductController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\ProductController;
 use App\Http\Controllers\HomeController;
@@ -44,4 +45,13 @@ Route::prefix('cart')
 
         Route::post('/', [CartController::class, 'sendEmail'])
             ->name('email.send');
+    });
+Route::prefix('backend')
+    ->middleware('can:isAdmin')
+    ->name('backend.')
+    ->group(function () {
+        Route::get('/products', [BackProductController::class, 'index'])
+            ->name('products.index');
+        Route::delete('/{product}', [BackProductController::class, 'destroy'])
+        ->name('products.destroy');
     });

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Providers;
-
+use Illuminate\Auth\Access\Response;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -26,5 +26,15 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         //
+    }
+
+    public function registerPolicies()
+    {
+        Gate::define('isAdmin', function ($user) {
+
+            return $user->email === config('auth.admin.email')
+                ? Response::allow()
+                : Response::deny('You must be an administrator.');
+        });
     }
 }
