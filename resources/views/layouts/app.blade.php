@@ -45,7 +45,7 @@
                                     <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                                 </li>
                             @endif
-                            
+
                             @if (Route::has('register'))
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
@@ -74,8 +74,14 @@
                 </div>
             </div>
         </nav>
-
         <main class="py-4">
+            @foreach(["success", "warning", "danger"] as $log_status)
+                @if (session()->has($log_status))
+                    <div class="alert alert-{{ $log_status }}">
+                        {{ session()->get($log_status) }}
+                    </div>
+                @endif
+            @endforeach
             @yield('content')
         </main>
     </div>

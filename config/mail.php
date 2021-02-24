@@ -107,4 +107,6 @@ return [
         ],
     ],
 
+    'to' => env('SHOP_MANAGER_EMAIL'),
+
 ];

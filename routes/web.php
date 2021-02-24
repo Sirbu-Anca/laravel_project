@@ -43,5 +43,5 @@ Route::prefix('cart')
             ->name('cart.destroy');
 
         Route::post('/', [CartController::class, 'sendEmail'])
-            ->name('email.store');
+            ->name('email.send');
     });

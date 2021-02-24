@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Mail\HTMLmail;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -14,15 +15,19 @@ class CartController extends Controller
      */
     public function index()
     {
-        $cart = session()->get('cart');
-
-        $products = Product::query()
-            ->whereIn('id', $cart)
-            ->paginate(5);
-        return view('front.cart', compact('products'));
+        $productsCart = [];
+        if (count(session()->get('cart', []))) {
+            $cart = session()->get('cart');
+            $productsCart = Product::query()
+                ->whereIn('id', $cart)
+                ->get();
+        }
+        if (count($productsCart)) {
+            return view('front.cart', compact('productsCart'));
+        } else {
+            return redirect()->route('products.index')->with('warning', 'Your cart is empty');
+        }
     }
-
-
     /**
      * Show the form for creating a new resource.
      *
@@ -35,7 +40,7 @@ class CartController extends Controller
 
     public function store(Request $request )
     {
-        $id = $request['productId'];
+        $id = $request->input('productId');
         $request->session()->put('cart.'.$id, $id);
         return redirect()
             ->route('products.index');
@@ -43,33 +48,26 @@ class CartController extends Controller
 
     public function sendEmail(Request $request)
     {
-        $validated = $request->validate([
+        $productsCart = [];
+        if (count(session()->get('cart', []))) {
+            $cart = session()->get('cart');
+            $productsCart = Product::query()
+                ->whereIn('id', $cart)
+                ->get();
+        }
+
+        $inputs = $request->validate([
             'name' => 'required',
-            'contactDetails' => 'required|email:rfc,dns',
+            'contactDetails' => 'required|email',
+            'comments' => '',
         ]);
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Product $product)
-    {
-        //
-    }
+        \Mail::to(config('mail.to'))
+            ->send( new HTMLmail($productsCart, $inputs));
+        $request->session()->forget('cart.');
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Product $product)
-    {
-        //
+        return redirect()->route('products.index')
+            ->with('success', 'Email sent!');
     }
 
     /**

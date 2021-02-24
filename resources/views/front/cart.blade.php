@@ -2,9 +2,9 @@
 
 @section('content')
 <h3>{{ __('Cart products') }}</h3>
-<div class="col-md-4">
+<div class="col-md-3">
     <table border="1px bold black">
-        @foreach($products as $product)
+        @foreach($productsCart as $product)
             <tr>
                 <td>
                     <img src="{{ $product->image_name }}" alt="image">
@@ -25,10 +25,10 @@
         @endforeach
     </table>
 </div>
-<div class="col-md-4">
-    <form action="{{ route('email.store') }}" method="post">
+<div class="col-md-3">
+    <form action="{{ route('email.send') }}" method="post">
         @csrf
-        <div>
+        <div class="mb-3">
             <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" placeholder="Name" value="{{ old('name') }}">
             @error('name')
                 <span class="invalid-feedback" role="alert">
@@ -36,7 +36,7 @@
                 </span>
             @enderror
         </div>
-        <div>
+        <div class="mb-3">
             <input type="text" class="form-control @error('contactDetails') is-invalid @enderror" name="contactDetails"  placeholder="{{__('Contact details')}}" value="{{ old('contactDetails') }}">
             @error('contactDetails')
             <span class="invalid-feedback" role="alert">
@@ -44,8 +44,8 @@
             </span>
             @enderror
         </div>
-        <div>
-            <textarea name="comments" class="form-control" cols="22" rows="3" placeholder="{{__('Comments')}}" ></textarea>
+        <div class="mb-3">
+            <textarea name="comments" class="form-control" rows="3" placeholder="{{__('Comments')}}" ></textarea>
         </div>
         <div>
             <button type="submit" name="submit">{{__('Checkout')}}</button>
