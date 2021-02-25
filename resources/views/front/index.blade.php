@@ -6,7 +6,8 @@
         @foreach($products as $product)
             <tr>
                 <th>
-                    <img src="{{ $product->image_name }}" alt="Product photo">
+                    <img src="{{ $product->getPhotoUrl() }}" alt="Product photo"
+                         style="width: 100px;height: 100px">
                 </th>
                 <td>
                     <div>{{ $product->title }}</div>

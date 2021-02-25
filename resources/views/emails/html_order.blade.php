@@ -29,7 +29,8 @@
         @foreach($cartProducts as $product)
             <tr>
                 <td>
-                    <img src="{{ $product->image_name }}" alt="image">
+                    <img src="{{ $product->getPhotoUrl() }}" alt="Product photo"
+                         style="width: 100px;height: 100px">
                 </td>
                 <td>
                     <div>{{ $product->title }}</div>

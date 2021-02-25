@@ -26,4 +26,8 @@ class Product extends Model
         'price',
         'image_name',
     ];
+    public function getPhotoUrl()
+    {
+        return asset('storage/products_images/' . $this->image_name);
+    }
 }
