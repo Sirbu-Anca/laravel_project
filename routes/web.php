@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\Back\OrderController;
 use App\Http\Controllers\Back\ProductController as BackProductController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\ProductController;
@@ -20,16 +21,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])
     ->name('home');
 
-Route::get('/index', [ProductController::class, 'index'])
+Route::get('/', [ProductController::class, 'index'])
     ->name('products.index');
 
 Route::prefix('cart')
@@ -59,4 +56,8 @@ Route::prefix('backend')
             ->name('products.update');
         Route::delete('/{product}', [BackProductController::class, 'destroy'])
             ->name('products.destroy');
+        Route::get('/orders', [OrderController::class, 'index'])
+            ->name('orders.index');
     });
+
+
