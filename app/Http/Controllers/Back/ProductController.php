@@ -9,6 +9,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -19,7 +21,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::query()
-            ->paginate();
+            ->get();
         return view('backend.products.index', compact('products'));
     }
 
@@ -54,10 +56,10 @@ class ProductController extends Controller
         $product->price = $request->input('price');
         $product->save();
 
-        if ($request->hasFile('image_name')) {
+        if ($request->file('image_name')->isValid()) {
             $uploaded_file = $request->file('image_name');
             $file_name = $product->id . '.' . $uploaded_file->extension();
-            $uploaded_file->storeAs('public/products_images', $file_name);
+            $uploaded_file->storeAs('products_images', $file_name, 'public');
             $product->image_name = $file_name;
             $product->save();
         }
@@ -68,17 +70,6 @@ class ProductController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param Product $product
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Product $product)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param Product $product
@@ -86,6 +77,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
+        $product = Product::query()->findOrFail($product->id);
         return view('backend.products.edit', compact('product'));
     }
 
@@ -109,10 +101,10 @@ class ProductController extends Controller
         $product->description = $request->input('description');
         $product->price = $request->input('price');
         $product->save();
-        if ($request->hasFile('image_name')) {
+        if ($request->file('image_name')->isValid()) {
             $uploaded_file = $request->file('image_name');
             $file_name = $product->id . '.' . $uploaded_file->extension();
-            $uploaded_file->storeAs('public/products_images', $file_name);
+            $uploaded_file->storeAs('products_images', $file_name, 'public');
             $product->image_name = $file_name;
             $product->save();
         }
@@ -130,7 +122,13 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        $product = Product::query()->findOrFail($product->id);
         $product->delete();
+        $path = 'public\products_images\\' . $product->image_name;
+        if ($product->image_name) {
+            Storage::disk()->delete($path);
+        }
+
         return redirect()
             ->route('backend.products.index')
             ->with('success', 'Product deleted.');
