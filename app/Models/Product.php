@@ -26,8 +26,14 @@ class Product extends Model
         'price',
         'image_name',
     ];
+
     public function getPhotoUrl()
     {
         return asset('storage/products_images/' . $this->image_name);
+    }
+
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class, 'order_product', 'product_id', 'order_id');
     }
 }

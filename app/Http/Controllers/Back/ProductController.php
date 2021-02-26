@@ -77,7 +77,6 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product = Product::query()->findOrFail($product->id);
         return view('backend.products.edit', compact('product'));
     }
 
