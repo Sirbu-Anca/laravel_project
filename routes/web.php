@@ -34,10 +34,10 @@ Route::get('/index', [ProductController::class, 'index'])
 
 Route::prefix('cart')
     ->group(function () {
-        Route::post('/cart', [CartController::class, 'store'])
-            ->name('cart.store');
         Route::get('/', [CartController::class, 'index'])
             ->name('cart.index');
+        Route::post('/cart', [CartController::class, 'store'])
+            ->name('cart.store');
         Route::delete('/{product}', [CartController::class, 'destroy'])
             ->name('cart.destroy');
         Route::post('/', [CartController::class, 'sendEmail'])
@@ -49,13 +49,13 @@ Route::prefix('backend')
     ->group(function () {
         Route::get('/products', [BackProductController::class, 'index'])
             ->name('products.index');
-        Route::get('/create', [BackProductController::class, 'create'])
+        Route::get('products/create', [BackProductController::class, 'create'])
             ->name('products.create');
-        Route::post('/',[BackProductController::class, 'store'])
+        Route::post('/products',[BackProductController::class, 'store'])
             ->name('products.store');
-        Route::get('/{product}/edit', [BackProductController::class, 'edit'])
+        Route::get('/products/{product}/edit', [BackProductController::class, 'edit'])
             ->name('products.edit');
-        Route::put('/{product}', [BackProductController::class, 'update'])
+        Route::put('/products/{product}', [BackProductController::class, 'update'])
             ->name('products.update');
         Route::delete('/{product}', [BackProductController::class, 'destroy'])
             ->name('products.destroy');
