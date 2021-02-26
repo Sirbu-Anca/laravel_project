@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Mail\HTMLmail;
+use App\Models\Order;
+use App\Models\OrderProduct;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -61,6 +63,20 @@ class CartController extends Controller
             'contactDetails' => 'required|email',
             'comments' => '',
         ]);
+
+        $order = new Order();
+        $order->name = $request->input('name');
+        $order->contactDetails = $request->input('contactDetails');
+        $order->comments = $request->input('comments');
+        $order->save();
+
+        foreach ($productsCart as $product) {
+            $orderProduct = new OrderProduct();
+            $orderProduct->order_id = $order->id;
+            $orderProduct->product_id = $product->id;
+            $orderProduct->price = $product->price;
+            $orderProduct->save();
+        }
 
         \Mail::to(config('mail.to'))
             ->send( new HTMLmail($productsCart, $inputs));
