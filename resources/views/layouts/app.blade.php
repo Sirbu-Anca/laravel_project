@@ -75,7 +75,7 @@
             </div>
         </nav>
         <main class="py-4">
-            @foreach(["success", "warning", "danger"] as $log_status)
+            @foreach(['success', 'warning', 'danger'] as $log_status)
                 @if (session()->has($log_status))
                     <div class="alert alert-{{ $log_status }}">
                         {{ session()->get($log_status) }}

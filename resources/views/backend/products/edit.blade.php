@@ -42,7 +42,7 @@
             @enderror
         </div>
         <div>
-            <button type="submit" name="submit">{{__('Save')}}</button>
+            <button type="submit">{{__('Save')}}</button>
         </div>
     </form>
 </div>
