@@ -64,7 +64,7 @@ class CartController extends Controller
 
         \Mail::to(config('mail.to'))
             ->send( new HTMLmail($productsCart, $inputs));
-        $request->session()->forget('cart.');
+        $request->session()->forget('cart');
 
         return redirect()->route('products.index')
             ->with('success', 'Email sent!');
