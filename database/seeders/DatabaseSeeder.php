@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
 
@@ -15,5 +16,11 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         Product::factory(7)->create();
+        Order::factory(5)->create();
+
+        foreach (Order::all() as $order) {
+            $products = Product::inRandomOrder()->take(rand(1,3))->pluck('id');
+            $order->products()->attach($products);
+        }
     }
 }
