@@ -1,6 +1,6 @@
 @extends('backend.layout')
 @section('header')
-    {{__('Insert detail product')}}
+    {{__('Insert product details')}}
 @endsection
 @section('content')
     <div class="col-md-3">
