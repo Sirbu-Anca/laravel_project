@@ -22,4 +22,5 @@
             </table>
         </div>
     </div>
+    {{ $orders->links('pagination::bootstrap-4') }}
 @endsection
