@@ -31,5 +31,5 @@ class OrderController extends Controller
     {
         return view('backend.orders.show', compact('order'));
     }
-    
+
 }
