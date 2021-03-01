@@ -7,6 +7,7 @@ use App\Mail\HTMLmail;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -30,17 +31,12 @@ class CartController extends Controller
             return redirect()->route('products.index')->with('warning', 'Your cart is empty');
         }
     }
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
-    public function store(Request $request )
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function store(Request $request ): RedirectResponse
     {
         $id = $request->input('productId');
         $request->session()->put('cart.'.$id, $id);
@@ -48,7 +44,11 @@ class CartController extends Controller
             ->route('products.index');
     }
 
-    public function sendEmail(Request $request)
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function sendEmail(Request $request): RedirectResponse
     {
         $productsCart = [];
         if (count(session()->get('cart', []))) {
@@ -88,11 +88,11 @@ class CartController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Product  $product
-
+     * @param Request $request
+     * @param Product $product
+     * @return RedirectResponse
      */
-    public function destroy( Request $request, Product $product )
+    public function destroy( Request $request, Product $product ): RedirectResponse
     {
         $request->session()->forget('cart.'.$product->id);
         return redirect()
