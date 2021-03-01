@@ -1,5 +1,8 @@
 @extends('backend.layout')
-
+@section('header')
+    {{__('List of products')}}
+    <a href="{{ route("backend.products.create") }}" class="btn btn-primary float-right">{{__('Add new')}}</a>
+@endsection
 @section('content')
     <div class="row">
         <div class="col-8">

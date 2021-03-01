@@ -9,7 +9,6 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -21,7 +20,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::query()
-            ->get();
+            ->paginate(5);
         return view('backend.products.index', compact('products'));
     }
 
@@ -114,10 +113,9 @@ class ProductController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
      * @param Product $product
      * @return RedirectResponse
-
+     * @throws \Exception
      */
     public function destroy(Product $product)
     {
