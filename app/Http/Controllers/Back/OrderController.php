@@ -18,7 +18,7 @@ class OrderController extends Controller
     public function index()
     {
         $orders = DB::table('order_product')
-            ->select('order_id', DB::raw('SUM(price) as total_sum'))
+            ->select('order_id', 'price', DB::raw('SUM(price) as total_sum'))
             ->groupBy('order_id')
             ->paginate(5);
         return view('backend.orders.index', compact('orders'));
