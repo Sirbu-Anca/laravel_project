@@ -1,11 +1,9 @@
-@extends('layouts.app')
+@extends('backend.layout')
 
 @section('content')
-    <div class="col-md-3">
-        <h4>{{__('Products list')}}</h4>
-        <h4><a href="{{ route('backend.products.create') }}">{{ __('Add new product') }}</a></h4>
-        <div>
-            <table border="1px bold black">
+    <div class="row">
+        <div class="col-8">
+            <table class="table table-striped">
                 @foreach($products as $product)
                     <tr>
                         <th>
