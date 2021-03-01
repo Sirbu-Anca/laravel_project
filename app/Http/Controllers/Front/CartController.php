@@ -9,6 +9,7 @@ use App\Models\OrderProduct;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Mail;
 
 class CartController extends Controller
 {
@@ -36,10 +37,10 @@ class CartController extends Controller
      * @param Request $request
      * @return RedirectResponse
      */
-    public function store(Request $request ): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $id = $request->input('productId');
-        $request->session()->put('cart.'.$id, $id);
+        $request->session()->put('cart.' . $id, $id);
         return redirect()
             ->route('products.index');
     }
@@ -78,8 +79,8 @@ class CartController extends Controller
             $orderProduct->save();
         }
 
-        \Mail::to(config('mail.to'))
-            ->send( new HTMLmail($productsCart, $inputs));
+        Mail::to(config('mail.to'))
+            ->send(new HTMLmail($productsCart, $inputs));
         $request->session()->forget('cart');
 
         return redirect()->route('products.index')
@@ -92,9 +93,9 @@ class CartController extends Controller
      * @param Product $product
      * @return RedirectResponse
      */
-    public function destroy( Request $request, Product $product ): RedirectResponse
+    public function destroy(Request $request, Product $product): RedirectResponse
     {
-        $request->session()->forget('cart.'.$product->id);
+        $request->session()->forget('cart.' . $product->id);
         return redirect()
             ->route("cart.index");
     }
