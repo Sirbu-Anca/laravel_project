@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Back\OrderController;
-use App\Http\Controllers\Back\OrderProductController;
 use App\Http\Controllers\Back\ProductController as BackProductController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\ProductController;

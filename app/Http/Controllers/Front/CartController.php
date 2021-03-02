@@ -45,7 +45,7 @@ class CartController extends Controller
             ->route('products.index');
     }
 
-    /**
+    /**shop
      * @param Request $request
      * @return RedirectResponse
      */
@@ -62,7 +62,6 @@ class CartController extends Controller
         $inputs = $request->validate([
             'name' => 'required',
             'contactDetails' => 'required|email',
-            'comments' => '',
         ]);
 
         $order = new Order();
