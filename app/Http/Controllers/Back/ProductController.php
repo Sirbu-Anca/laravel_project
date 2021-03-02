@@ -46,7 +46,7 @@ class ProductController extends Controller
             'title' => 'required',
             'description' => 'required',
             'price' => 'required',
-            'image_name' => 'required|image',
+            'image_name' => 'required|image|mimes:jpg, jpeg, png, bmp, gif, svg|size:500',
         ]);
 
         $product = new Product();
@@ -92,7 +92,7 @@ class ProductController extends Controller
             'title' => 'required',
             'description' => 'required',
             'price' => 'required',
-            'image_name' => 'required|image',
+            'image_name' => 'required|image|mimes:jpg, jpeg, png, bmp, gif, svg|size:500',
         ]);
 
         $product->title = $request->input('title');
