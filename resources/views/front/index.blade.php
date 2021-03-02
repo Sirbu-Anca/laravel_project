@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-    <h3>{{__('Products')}}</h3>
+<h3>{{__('Products')}}</h3>
     <table border="1px bold black">
-        @foreach($products as $product)
+        @foreach ($products as $product)
             <tr>
                 <th>
-                    <img src="{{ $product->getPhotoUrl() }}" alt="Product photo"
+                    <img src="{{ $product->getPhotoUrl() }}" alt="{{__('Product photo')}}"
                          style="width: 100px;height: 100px">
                 </th>
                 <td>
