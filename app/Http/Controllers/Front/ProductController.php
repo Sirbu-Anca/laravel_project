@@ -13,7 +13,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::query()->get();
+        $products = Product::query()
+            ->paginate(5);
         if (count(session()->get('cart', []))) {
             $cartIds = array_values(session()->get('cart'));
             $products = Product::query()

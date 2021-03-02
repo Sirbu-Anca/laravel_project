@@ -24,5 +24,6 @@
             </tr>
         @endforeach
     </table>
+    {{ $products->links('pagination::bootstrap-4') }}
     <a href="{{ route('cart.index') }}">{{__('Go to cart')}}</a>
 @endsection
