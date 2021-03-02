@@ -1,7 +1,9 @@
 @extends('backend.layout')
+
 @section('header')
     {{__('Insert product details')}}
 @endsection
+
 @section('content')
     <div class="col-md-3">
         <form action="{{ route('backend.products.store') }}" method="post" enctype="multipart/form-data">

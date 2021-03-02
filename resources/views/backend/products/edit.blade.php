@@ -1,7 +1,9 @@
 @extends('backend.layout')
+
 @section('header')
     {{__('Update product')}}
 @endsection
+
 @section('content')
 <div class="col-md-3">
     <form action="{{ route('backend.products.update' ,$product) }}" method="post" enctype="multipart/form-data">
