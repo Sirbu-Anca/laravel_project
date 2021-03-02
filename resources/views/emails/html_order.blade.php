@@ -15,7 +15,7 @@
             </p>
         </td>
     </tr>
-    @if(!empty($inputs['comments']))
+    @if (!empty($inputs['comments']))
     <tr>
         <td>
             <p>
@@ -26,10 +26,10 @@
     </tr>
     @endif
     <table border="1px bold black">
-        @foreach($cartProducts as $product)
+        @foreach ($cartProducts as $product)
             <tr>
                 <td>
-                    <img src="{{ $product->getPhotoUrl() }}" alt="Product photo"
+                    <img src="{{ $product->getPhotoUrl() }}" alt="{{__('Product photo')}}"
                          style="width: 100px;height: 100px">
                 </td>
                 <td>

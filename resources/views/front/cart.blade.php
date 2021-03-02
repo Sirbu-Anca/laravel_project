@@ -4,10 +4,10 @@
 <h3>{{ __('Cart products') }}</h3>
 <div class="col-md-3">
     <table border="1px bold black">
-        @foreach($productsCart as $product)
+        @foreach ($productsCart as $product)
             <tr>
                 <td>
-                    <img src="{{ $product->getPhotoUrl() }}" alt="Product photo"
+                    <img src="{{ $product->getPhotoUrl() }}" alt="{{__('Product photo')}}"
                          style="width: 100px;height: 100px">
                 </td>
                 <td>
@@ -30,10 +30,10 @@
     <form action="{{ route('email.send') }}" method="post">
         @csrf
         <div class="mb-3">
-            <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" placeholder="Name" value="{{ old('name') }}">
+            <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" placeholder="{{__('Name')}}" value="{{ old('name') }}">
             @error('name')
                 <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
+                    <strong>{{ __($message) }}</strong>
                 </span>
             @enderror
         </div>
@@ -41,7 +41,7 @@
             <input type="text" class="form-control @error('contact_details') is-invalid @enderror" name="contact_details"  placeholder="{{__('Contact details')}}" value="{{ old('contact_details') }}">
             @error('contact_details')
             <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
+                    <strong>{{ __($message) }}</strong>
             </span>
             @enderror
         </div>
@@ -49,7 +49,7 @@
             <textarea name="comments" class="form-control" rows="3" placeholder="{{__('Comments')}}" ></textarea>
         </div>
         <div>
-            <button type="submit" name="submit">{{__('Checkout')}}</button>
+            <button type="submit">{{__('Checkout')}}</button>
         </div>
     </form>
 </div>
