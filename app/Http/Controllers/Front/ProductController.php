@@ -19,7 +19,7 @@ class ProductController extends Controller
             $cartIds = array_values(session()->get('cart'));
             $products = Product::query()
                 ->whereNotIn('id', $cartIds)
-                ->get();
+                ->paginate(5);
         }
         return view('front.index', compact('products'));
     }
