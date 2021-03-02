@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
         Order::factory(5)->create();
 
         foreach (Order::all() as $order) {
-            $products = Product::inRandomOrder()->take(rand(1,3))->pluck('id');
+            $products = Product::query()->take(rand(1,3))->pluck('id');
             $order->products()->attach($products);
         }
     }

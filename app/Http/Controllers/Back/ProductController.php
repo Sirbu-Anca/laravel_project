@@ -46,7 +46,7 @@ class ProductController extends Controller
             'title' => 'required',
             'description' => 'required',
             'price' => 'required',
-            'image_name' => 'nullable|image',
+            'image_name' => 'required|image',
         ]);
 
         $product = new Product();
@@ -92,7 +92,7 @@ class ProductController extends Controller
             'title' => 'required',
             'description' => 'required',
             'price' => 'required',
-            'image_name' => 'nullable|image',
+            'image_name' => 'required|image',
         ]);
 
         $product->title = $request->input('title');
