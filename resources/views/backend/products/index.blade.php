@@ -1,17 +1,17 @@
 @extends('backend.layout')
 @section('header')
     {{__('List of products')}}
-    <a href="{{ route("backend.products.create") }}" class="btn btn-primary float-right">{{__('Add new')}}</a>
+    <a href="{{ route('backend.products.create') }}" class="btn btn-primary float-right">{{__('Add new')}}</a>
 @endsection
 @section('content')
     <div class="row">
         <div class="col-8">
             <table class="table table-striped">
-                @foreach($products as $product)
+                @foreach ($products as $product)
                     <tr>
                         <th>
-                            @if($product->image_name)
-                                <img src="{{ $product->getPhotoUrl() }}" alt="Product photo"
+                            @if ($product->image_name)
+                                <img src="{{ $product->getPhotoUrl() }}" alt="{{__('Product photo')}}"
                                      style="width: 100px;height: 100px">
                             @endif
                         </th>

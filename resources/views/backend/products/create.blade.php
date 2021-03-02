@@ -11,7 +11,7 @@
                        placeholder="{{__('Title')}}" value="{{ old('title')}}">
                 @error('title')
                 <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
+                    <strong>{{ __($message) }}</strong>
                 </span>
                 @enderror
             </div>
@@ -20,7 +20,7 @@
                        placeholder="{{__('Description')}}" value="{{ old('description') }}">
                 @error('description')
                 <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
+                    <strong>{{ __($message) }}</strong>
                 </span>
                 @enderror
             </div>
@@ -29,7 +29,7 @@
                        placeholder="{{__('Price')}}" value="{{ old('price') }}">
                 @error('price')
                 <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
+                    <strong>{{ __($message) }}</strong>
                 </span>
                 @enderror
             </div>
@@ -38,7 +38,7 @@
                        placeholder="{{__('Image_name')}}">
                 @error('image_name')
                 <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
+                    <strong>{{ __($message) }}</strong>
                 </span>
                 @enderror
             </div>

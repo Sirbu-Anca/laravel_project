@@ -12,7 +12,7 @@
                    placeholder="{{__('Title')}}" value="{{ $product->title }}">
             @error('title')
                 <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
+                    <strong>{{ __($message) }}</strong>
                 </span>
             @enderror
         </div>
@@ -21,7 +21,7 @@
                    placeholder="{{__('Description')}}" value="{{ $product->description }}">
             @error('description')
                 <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
+                    <strong>{{ __($message) }}</strong>
                 </span>
             @enderror
         </div>
@@ -30,7 +30,7 @@
                    placeholder="{{__('Price')}}" value="{{ $product->price }}">
             @error('price')
                 <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
+                    <strong>{{ __($message) }}</strong>
                 </span>
             @enderror
         </div>
@@ -39,7 +39,7 @@
                    placeholder="{{__('Image_name')}}" value="{{ null }}">
             @error('image_name')
                 <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
+                    <strong>{{ __($message) }}</strong>
                 </span>
             @enderror
         </div>

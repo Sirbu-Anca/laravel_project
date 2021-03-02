@@ -6,12 +6,12 @@
     @include('backend.layout_head')
 </head>
 <body>
-@include("backend.layout_navbar")
+@include('backend.layout_navbar')
 <div class="container-fluid">
     <div class="row">
         @include('backend.layout_sidebar')
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-            @foreach(['success', 'warning', 'danger'] as $log_status)
+            @foreach (['success', 'warning', 'danger'] as $log_status)
                 @if (session()->has($log_status))
                     <div class="alert alert-{{ $log_status }}">
                         {{ session()->get($log_status) }}
