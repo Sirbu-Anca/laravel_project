@@ -28,7 +28,7 @@
                     <td>
                         <p>
                             {{__('Address')}}
-                            {{ $order->contactDetails }}
+                            {{ $order->contact_details }}
                         </p>
                     </td>
                 </tr>

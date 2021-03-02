@@ -61,12 +61,12 @@ class CartController extends Controller
 
         $inputs = $request->validate([
             'name' => 'required',
-            'contactDetails' => 'required|email',
+            'contact_details' => 'required|email',
         ]);
 
         $order = new Order();
         $order->name = $request->input('name');
-        $order->contactDetails = $request->input('contactDetails');
+        $order->contact_details = $request->input('contact_details');
         $order->comments = $request->input('comments');
         $order->save();
 

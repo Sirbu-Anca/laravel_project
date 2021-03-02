@@ -11,7 +11,7 @@
         <td>
             <p>
                 {{ __('Contact:') }}
-                {{ $inputs['contactDetails'] }}
+                {{ $inputs['contact_details'] }}
             </p>
         </td>
     </tr>

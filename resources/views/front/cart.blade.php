@@ -38,8 +38,8 @@
             @enderror
         </div>
         <div class="mb-3">
-            <input type="text" class="form-control @error('contactDetails') is-invalid @enderror" name="contactDetails"  placeholder="{{__('Contact details')}}" value="{{ old('contactDetails') }}">
-            @error('contactDetails')
+            <input type="text" class="form-control @error('contact_details') is-invalid @enderror" name="contact_details"  placeholder="{{__('Contact details')}}" value="{{ old('contact_details') }}">
+            @error('contact_details')
             <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
             </span>

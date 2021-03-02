@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * class Product
@@ -27,11 +28,17 @@ class Product extends Model
         'image_name',
     ];
 
+    /**
+     * @return string
+     */
     public function getPhotoUrl()
     {
         return asset('storage/products_images/' . $this->image_name);
     }
 
+    /**
+     * @return BelongsToMany
+     */
     public function orders()
     {
         return $this->belongsToMany(Order::class, 'order_product', 'product_id', 'order_id');

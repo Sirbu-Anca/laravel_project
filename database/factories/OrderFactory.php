@@ -23,7 +23,7 @@ class OrderFactory extends Factory
     {
         return [
             'name' => $this->faker->word,
-            'contactDetails' => $this->faker->unique()->safeEmail,
+            'contact_details' => $this->faker->unique()->safeEmail,
             'comments' => $this->faker->sentence,
         ];
     }
