@@ -29,7 +29,7 @@ class CartController extends Controller
         if (count($productsCart)) {
             return view('front.cart', compact('productsCart'));
         } else {
-            return redirect()->route('products.index')->with('warning', 'Your cart is empty');
+            return redirect()->route('products.index')->with('warning', __('Your cart is empty'));
         }
     }
 
@@ -83,7 +83,7 @@ class CartController extends Controller
         $request->session()->forget('cart');
 
         return redirect()->route('products.index')
-            ->with('success', 'Email sent!');
+            ->with('success', __('Email sent!'));
     }
 
     /**
