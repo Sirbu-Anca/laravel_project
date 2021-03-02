@@ -15,7 +15,7 @@ class OrderController extends Controller
      * Display a listing of the resource.
      *
      */
-    public function index()
+    public function index(): Factory|View|Application
     {
         $orders = DB::table('order_product')
             ->select('order_id', 'price', DB::raw('SUM(price) as total_sum'))
@@ -29,7 +29,7 @@ class OrderController extends Controller
      * @param Order $order
      * @return Application|Factory|View
      */
-    public function show(Order $order)
+    public function show(Order $order): Factory|View|Application
     {
         return view('backend.orders.show', compact('order'));
     }
