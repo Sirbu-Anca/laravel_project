@@ -1,13 +1,14 @@
 @extends('backend.layout')
 
 @section('content')
-    @php
-        /* @var \App\Models\Order $order */
-    @endphp
-    <h4>{{ __('Order details') }}</h4>
+@php
+    /* @var Order $order */use App\Models\Order;
+@endphp
+
+<h4>{{ __('Order details') }}</h4>
     <div class="row">
         <div class="col-8">
-            <table class="">
+            <table>
                 <tr>
                     <td>
                         <p>
@@ -35,17 +36,17 @@
                 <tr>
                     <td>
                         <p>
-                            @if($order->comments)
+                            @if $order->comments)
                                 {{ __('Comments:') }}
                                 {{ $order->comments }}
                             @endif
                         </p>
                     </td>
                 </tr>
-                <?php foreach ($order->products as $product) : ?>
+                @foreach ($order->products as $product)
                 <tr>
                     <td>
-                        <img src="{{ $product->getPhotoUrl() }}" alt="Product photo"
+                        <img src="{{ $product->getPhotoUrl() }}" alt="{{__('Product photo')}}"
                              style="width: 100px;height: 100px">
                     </td>
                     <td>
@@ -54,7 +55,7 @@
                         <div>{{ $product->pivot->price }}</div>
                     </td>
                 </tr>
-                <?php endforeach; ?>
+                @endforeach
             </table>
         </div>
     </div>

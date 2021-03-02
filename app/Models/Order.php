@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use phpDocumentor\Reflection\Types\Integer;
 
 /**
  * @property Integer $id
  * @property string  $name
- * @property string  $contactDetails
+ * @property string  $contact_details
  * @property string  $comments
  */
 class Order extends Model
@@ -18,13 +19,13 @@ class Order extends Model
 
     protected $fillable = [
         'name',
-        'contactDetails',
+        'contact_details',
         'comments',
     ];
-    /**
-     * @var mixed
-     */
 
+    /**
+     * @return BelongsToMany
+     */
     public function products()
     {
         return $this->belongsToMany(Product::class, 'order_product', 'order_id', 'product_id')
