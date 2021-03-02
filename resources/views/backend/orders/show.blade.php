@@ -36,7 +36,7 @@
                 <tr>
                     <td>
                         <p>
-                            @if $order->comments)
+                            @if ($order->comments)
                                 {{ __('Comments:') }}
                                 {{ $order->comments }}
                             @endif
