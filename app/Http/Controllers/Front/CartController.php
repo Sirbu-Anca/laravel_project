@@ -7,6 +7,11 @@ use App\Mail\HTMLmail;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Mail;
@@ -17,7 +22,21 @@ class CartController extends Controller
      * Display a listing of the resource.
      *
      */
-    public function index()
+    public function index(): Factory|View|RedirectResponse|Application
+    {
+        $productsCart = $this->getProductsCart();
+        if (count($productsCart)) {
+            return view('front.cart', compact('productsCart'));
+        } else {
+            return redirect()->route('products.index')
+                        ->with('warning', __('Your cart is empty'));
+        }
+    }
+
+    /**
+     * @return Collection|array
+     */
+    protected function getProductsCart(): Collection|array
     {
         $productsCart = [];
         if (count(session()->get('cart', []))) {
@@ -26,11 +45,7 @@ class CartController extends Controller
                 ->whereIn('id', $cart)
                 ->get();
         }
-        if (count($productsCart)) {
-            return view('front.cart', compact('productsCart'));
-        } else {
-            return redirect()->route('products.index')->with('warning', __('Your cart is empty'));
-        }
+        return $productsCart;
     }
 
     /**
@@ -51,17 +66,12 @@ class CartController extends Controller
      */
     public function sendEmail(Request $request): RedirectResponse
     {
-        $productsCart = [];
-        if (count(session()->get('cart', []))) {
-            $cart = session()->get('cart');
-            $productsCart = Product::query()
-                ->whereIn('id', $cart)
-                ->get();
-        }
+        $productsCart = $this->getProductsCart();
 
         $inputs = $request->validate([
             'name' => 'required',
             'contact_details' => 'required|email',
+            'comments' =>'nullable'
         ]);
 
         $order = new Order();
