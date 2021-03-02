@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class LoginController extends Controller
@@ -39,14 +40,18 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    protected function authenticated(Request $request, $user)
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    protected function authenticated(Request $request)
     {
         if ($request->input('email') === config('auth.admin.email')) {
             return redirect()
                 ->route('backend.products.index');
         } else {
             return redirect()
-                ->route('home_page');
+                ->route('products.index');
         }
     }
 }
