@@ -74,11 +74,7 @@ class CartController extends Controller
             'comments' => 'nullable'
         ]);
 
-        $order = new Order();
-        $order->name = $request->input('name');
-        $order->contact_details = $request->input('contact_details');
-        $order->comments = $request->input('comments');
-        $order->save();
+        $order = Order::create($inputs);
 
         foreach ($productsCart as $product) {
             $orderProduct = new OrderProduct();
