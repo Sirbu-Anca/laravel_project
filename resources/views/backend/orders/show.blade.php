@@ -1,7 +1,7 @@
 @extends('backend.layout')
 
 @section('header')
-    {{__('Order details')}}
+    {{ __('Order details') }}
 @endsection
 
 @section('content')
@@ -14,7 +14,7 @@
                 <tr>
                     <td>
                         <p>
-                            {{__('Date:')}}
+                            {{ __('Date:') }}
                             {{ $order->created_at}}
                         </p>
                     </td>
@@ -22,7 +22,7 @@
                 <tr>
                     <td>
                         <p>
-                            {{__('Name:')}}
+                            {{ __('Name:') }}
                             {{ $order->name  }}
                         </p>
                     </td>
@@ -30,7 +30,7 @@
                 <tr>
                     <td>
                         <p>
-                            {{__('Address')}}
+                            {{ __('Address') }}
                             {{ $order->contact_details }}
                         </p>
                     </td>
@@ -48,7 +48,7 @@
                 @foreach ($order->products as $product)
                     <tr>
                         <td>
-                            <img src="{{ $product->getPhotoUrl() }}" alt="{{__('Product photo')}}"
+                            <img src="{{ $product->getPhotoUrl() }}" alt="{{ __('Product photo') }}"
                                  style="width: 100px;height: 100px">
                         </td>
                         <td>
