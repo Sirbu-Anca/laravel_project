@@ -19,7 +19,7 @@
     <tr>
         <td>
             <p>
-                {{__('Comments:')}}
+                {{ __('Comments:') }}
                 {{ $inputs['comments'] }}
             </p>
         </td>
@@ -29,7 +29,7 @@
         @foreach ($cartProducts as $product)
             <tr>
                 <td>
-                    <img src="{{ $product->getPhotoUrl() }}" alt="{{__('Product photo')}}"
+                    <img src="{{ $product->getPhotoUrl() }}" alt="{{ __('Product photo') }}"
                          style="width: 100px;height: 100px">
                 </td>
                 <td>

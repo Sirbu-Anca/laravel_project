@@ -7,7 +7,7 @@
             @foreach ($productsCart as $product)
                 <tr>
                     <td>
-                        <img src="{{ $product->getPhotoUrl() }}" alt="{{__('Product photo')}}"
+                        <img src="{{ $product->getPhotoUrl() }}" alt="{{ __('Product photo') }}"
                              style="width: 100px;height: 100px">
                     </td>
                     <td>
@@ -19,7 +19,7 @@
                         <form action="{{ route('cart.destroy', $product) }}" method="post">
                             @csrf
                             @method('delete')
-                            <button type="submit">{{__('Remove')}}</button>
+                            <button type="submit">{{ __('Remove') }}</button>
                         </form>
                     </td>
                 </tr>
@@ -31,7 +31,7 @@
             @csrf
             <div class="mb-3">
                 <input type="text" class="form-control @error('name') is-invalid @enderror" name="name"
-                       placeholder="{{__('Name')}}" value="{{ old('name') }}">
+                       placeholder="{{ __('Name') }}" value="{{ old('name') }}">
                 @error('name')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ __($message) }}</strong>
@@ -40,7 +40,7 @@
             </div>
             <div class="mb-3">
                 <input type="text" class="form-control @error('contact_details') is-invalid @enderror"
-                       name="contact_details" placeholder="{{__('Contact details')}}"
+                       name="contact_details" placeholder="{{ __('Contact details') }}"
                        value="{{ old('contact_details') }}">
                 @error('contact_details')
                 <span class="invalid-feedback" role="alert">
@@ -49,14 +49,14 @@
                 @enderror
             </div>
             <div class="mb-3">
-                <textarea name="comments" class="form-control" rows="3" placeholder="{{__('Comments')}}"></textarea>
+                <textarea name="comments" class="form-control" rows="3" placeholder="{{ __('Comments') }}"></textarea>
             </div>
             <div>
-                <button type="submit">{{__('Checkout')}}</button>
+                <button type="submit">{{ __('Checkout') }}</button>
             </div>
         </form>
     </div>
     <div class="col-md-4">
-        <a href="{{ route('products.index') }}">{{__('Go to index')}}</a>
+        <a href="{{ route('products.index') }}">{{ __('Go to index') }}</a>
     </div>
 @endsection
