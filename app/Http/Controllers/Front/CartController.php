@@ -29,7 +29,7 @@ class CartController extends Controller
             return view('front.cart', compact('productsCart'));
         } else {
             return redirect()->route('products.index')
-                        ->with('warning', __('Your cart is empty'));
+                ->with('warning', __('Your cart is empty'));
         }
     }
 
@@ -71,7 +71,7 @@ class CartController extends Controller
         $inputs = $request->validate([
             'name' => 'required',
             'contact_details' => 'required|email',
-            'comments' =>'nullable'
+            'comments' => 'nullable'
         ]);
 
         $order = new Order();
