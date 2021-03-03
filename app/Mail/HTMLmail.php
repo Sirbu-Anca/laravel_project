@@ -17,7 +17,8 @@ class HTMLmail extends Mailable
     /**
      * Create a new message instance.
      *
-     * @return void
+     * @param $cartProducts
+     * @param $inputs
      */
     public function __construct($cartProducts, $inputs)
     {
