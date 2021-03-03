@@ -43,26 +43,16 @@ class ProductController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'image_name' => 'required|image|mimes:jpg, jpeg, png, bmp, gif, svg',
-        ]);
+        $product = Product::create($this->validateProduct($request));
 
-        $product = new Product();
-        $product->title = $request->input('title');
-        $product->description = $request->input('description');
-        $product->price = $request->input('price');
-        $product->save();
-
-        if ($request->file('image_name')->isValid()) {
+        if ($request->hasFile('image_name')) {
             $uploaded_file = $request->file('image_name');
             $file_name = $product->id . '.' . $uploaded_file->extension();
             $uploaded_file->storeAs('products_images', $file_name, 'public');
             $product->image_name = $file_name;
             $product->save();
         }
+
         return redirect()
             ->route('backend.products.index')
             ->with('success', __('New product successfully added.'));
@@ -89,27 +79,33 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product): RedirectResponse
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'image_name' => 'required|image|mimes:jpg, jpeg, png, bmp, gif, svg',
-        ]);
+        $product->update($this->validateProduct($request));
 
-        $product->title = $request->input('title');
-        $product->description = $request->input('description');
-        $product->price = $request->input('price');
-        $product->save();
-        if ($request->file('image_name')->isValid()) {
+        if ($request->hasFile('image_name')) {
             $uploaded_file = $request->file('image_name');
             $file_name = $product->id . '.' . $uploaded_file->extension();
             $uploaded_file->storeAs('products_images', $file_name, 'public');
             $product->image_name = $file_name;
-            $product->save();
+            $product->update();
         }
+
         return redirect()
             ->route('backend.products.index')
             ->with('success', __('Product updated successfully.'));
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    protected function validateProduct(Request $request): array
+    {
+        return $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'image_name' => 'image|mimes:jpg, jpeg, png, bmp, gif, svg',
+        ]);
     }
 
     /**

@@ -31,7 +31,7 @@ class Product extends Model
     /**
      * @return string
      */
-    public function getPhotoUrl()
+    public function getPhotoUrl(): string
     {
         return asset('storage/products_images/' . $this->image_name);
     }
@@ -39,7 +39,7 @@ class Product extends Model
     /**
      * @return BelongsToMany
      */
-    public function orders()
+    public function orders(): BelongsToMany
     {
         return $this->belongsToMany(Order::class, 'order_product', 'product_id', 'order_id');
     }
