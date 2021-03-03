@@ -1,8 +1,8 @@
 @extends('backend.layout')
 
 @section('header')
-    {{__('List of products')}}
-    <a href="{{ route('backend.products.create') }}" class="btn btn-primary float-right">{{__('Add new')}}</a>
+    {{ __('List of products') }}
+    <a href="{{ route('backend.products.create') }}" class="btn btn-primary float-right">{{ __('Add new') }}</a>
 @endsection
 
 @section('content')
@@ -13,7 +13,7 @@
                     <tr>
                         <th>
                             @if ($product->image_name)
-                                <img src="{{ $product->getPhotoUrl() }}" alt="{{__('Product photo')}}"
+                                <img src="{{ $product->getPhotoUrl() }}" alt="{{ __('Product photo') }}"
                                      style="width: 100px;height: 100px">
                             @endif
                         </th>
@@ -27,7 +27,7 @@
                             <form action="{{ route('backend.products.destroy', $product) }}" method="post">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit">{{__('Delete')}}</button>
+                                <button type="submit">{{ __('Delete') }}</button>
                             </form>
                         </td>
                     </tr>

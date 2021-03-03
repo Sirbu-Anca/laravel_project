@@ -4,7 +4,7 @@
         <li class="nav-item text-nowrap">
             <form action="{{ route('logout') }}" method="post">
                 @csrf
-                <button type="submit" class="btn btn-outline-primary">{{__('Sign out')}}</button>
+                <button type="submit" class="btn btn-outline-primary">{{ __('Sign out' }}</button>
             </form>
         </li>
     </ul>
