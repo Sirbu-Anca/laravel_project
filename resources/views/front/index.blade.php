@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<h3>{{__('Products')}}</h3>
+    <h3>{{__('Products')}}</h3>
     <table border="1px bold black">
         @foreach ($products as $product)
             <tr>
