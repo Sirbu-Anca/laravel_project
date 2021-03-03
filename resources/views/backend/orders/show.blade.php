@@ -1,11 +1,13 @@
 @extends('backend.layout')
 
-@section('content')
-@php
-    /* @var Order $order */use App\Models\Order;
-@endphp
+@section('header')
+    {{__('Order details')}}
+@endsection
 
-<h4>{{ __('Order details') }}</h4>
+@section('content')
+    @php
+        /* @var Order $order */use App\Models\Order
+    @endphp
     <div class="row">
         <div class="col-8">
             <table>
@@ -44,17 +46,17 @@
                     </td>
                 </tr>
                 @foreach ($order->products as $product)
-                <tr>
-                    <td>
-                        <img src="{{ $product->getPhotoUrl() }}" alt="{{__('Product photo')}}"
-                             style="width: 100px;height: 100px">
-                    </td>
-                    <td>
-                        <div>{{ $product->title }}</div>
-                        <div>{{ $product->description }}</div>
-                        <div>{{ $product->pivot->price }}</div>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>
+                            <img src="{{ $product->getPhotoUrl() }}" alt="{{__('Product photo')}}"
+                                 style="width: 100px;height: 100px">
+                        </td>
+                        <td>
+                            <div>{{ $product->title }}</div>
+                            <div>{{ $product->description }}</div>
+                            <div>{{ $product->pivot->price }}</div>
+                        </td>
+                    </tr>
                 @endforeach
             </table>
         </div>

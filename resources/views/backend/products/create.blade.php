@@ -1,7 +1,7 @@
 @extends('backend.layout')
 
 @section('header')
-    {{__('Insert product details')}}
+    {{__('Enter the product details')}}
 @endsection
 
 @section('content')
