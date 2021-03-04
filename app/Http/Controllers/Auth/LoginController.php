@@ -46,7 +46,7 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request)
     {
-        if ($request->input('email') === config('auth.admin.email')) {
+        if (\Auth::check()) {
             return redirect()
                 ->route('backend.products.index');
         } else {
