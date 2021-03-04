@@ -11,10 +11,10 @@
     <div class="row">
         @include('backend.layout_sidebar')
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-            @foreach (['success', 'warning', 'danger'] as $log_status)
-                @if (session()->has($log_status))
-                    <div class="alert alert-{{ $log_status }}">
-                        {{ session()->get($log_status) }}
+            @foreach (['success', 'warning', 'danger'] as $logStatus)
+                @if (session()->has($logStatus))
+                    <div class="alert alert-{{ $logStatus }}">
+                        {{ session()->get($logStatus) }}
                     </div>
                 @endif
             @endforeach

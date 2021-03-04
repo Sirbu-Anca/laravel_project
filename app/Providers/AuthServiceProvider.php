@@ -25,13 +25,4 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
     }
-
-    public function registerPolicies()
-    {
-        Gate::define('isAdmin', function ($user) {
-            return $user->email === config('auth.admin.email')
-                ? Response::allow()
-                : Response::deny('You must be an administrator.');
-        });
-    }
 }

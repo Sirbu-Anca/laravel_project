@@ -77,10 +77,6 @@ return [
         // ],
     ],
 
-    'admin' => [
-        'email' => env('SHOP_MANAGER_EMAIL'),
-        'password' => env('ADMIN_PASSWORD'),
-    ],
     /*
     |--------------------------------------------------------------------------
     | Resetting Passwords
