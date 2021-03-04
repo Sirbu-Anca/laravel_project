@@ -44,7 +44,7 @@ class ProductController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $product = Product::create($this->validateProduct($request));
-        $this->checkFile($request, $product);
+        $this->saveProductFile($request, $product);
 
         return redirect()
             ->route('backend.products.index')
@@ -73,7 +73,7 @@ class ProductController extends Controller
     public function update(Request $request, Product $product): RedirectResponse
     {
         $product->update($this->validateProduct($request));
-        $this->checkFile($request, $product);
+        $this->saveProductFile($request, $product);
 
         return redirect()
             ->route('backend.products.index')
@@ -94,7 +94,7 @@ class ProductController extends Controller
         ]);
     }
 
-    protected function checkFile(Request $request, $product)
+    protected function saveProductFile(Request $request, $product)
     {
         if ($request->hasFile('image')) {
             $uploadedFile = $request->file('image');
