@@ -56,11 +56,10 @@ class CartController extends Controller
     {
         $id = $request->input('productId');
         $product = Product::query()->findOrFail($id);
-        if ($product) {
-            $request->session()->put('cart.' . $id, $id);
-        }
+        $request->session()->put('cart.' . $id, $id);
         return redirect()
-            ->route('products.index');
+            ->route('products.index')
+            ->with('success', $product->title . ' successfully added in cart');
     }
 
     /**shop
