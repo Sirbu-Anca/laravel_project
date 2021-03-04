@@ -59,7 +59,7 @@ class CartController extends Controller
         $request->session()->put('cart.' . $id, $id);
         return redirect()
             ->route('products.index')
-            ->with('success', $product->title . ' successfully added in cart');
+            ->with('success', $product->title . __(' successfully added in cart'));
     }
 
     /**shop
