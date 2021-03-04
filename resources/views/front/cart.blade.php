@@ -4,7 +4,7 @@
     <h3>{{ __('Cart products') }}</h3>
     <div class="col-md-3">
         <table border="1px bold black">
-            @foreach ($productsCart as $product)
+            @foreach ($cartProducts as $product)
                 <tr>
                     <td>
                         <img src="{{ $product->getPhotoUrl() }}" alt="{{ __('Product photo') }}"

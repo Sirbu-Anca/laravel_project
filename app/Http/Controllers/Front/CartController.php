@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Mail\HTMLmail;
+use App\Mail\OrderConfirmation;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
@@ -24,9 +24,9 @@ class CartController extends Controller
      */
     public function index(): Factory|View|RedirectResponse|Application
     {
-        $productsCart = $this->getProductsCart();
-        if (count($productsCart)) {
-            return view('front.cart', compact('productsCart'));
+        $cartProducts = $this->getCartProducts();
+        if (count($cartProducts)) {
+            return view('front.cart', compact('cartProducts'));
         } else {
             return redirect()->route('products.index')
                 ->with('warning', __('Your cart is empty'));
@@ -36,16 +36,16 @@ class CartController extends Controller
     /**
      * @return Collection|array
      */
-    protected function getProductsCart(): Collection|array
+    protected function getCartProducts(): Collection|array
     {
-        $productsCart = [];
+        $cartProducts = [];
         if (count(session()->get('cart', []))) {
             $cart = session()->get('cart');
-            $productsCart = Product::query()
+            $cartProducts = Product::query()
                 ->whereIn('id', $cart)
                 ->get();
         }
-        return $productsCart;
+        return $cartProducts;
     }
 
     /**
@@ -55,7 +55,10 @@ class CartController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $id = $request->input('productId');
-        $request->session()->put('cart.' . $id, $id);
+        $product = Product::query()->findOrFail($id);
+        if ($product) {
+            $request->session()->put('cart.' . $id, $id);
+        }
         return redirect()
             ->route('products.index');
     }
@@ -66,28 +69,24 @@ class CartController extends Controller
      */
     public function sendEmail(Request $request): RedirectResponse
     {
-        $productsCart = $this->getProductsCart();
+        $cartProducts = $this->getCartProducts();
 
-        $inputs = $request->validate([
-            'name' => 'required',
-            'contact_details' => 'required|email',
-            'comments' => 'nullable'
-        ]);
+        if ($cartProducts) {
+            $inputs = $request->validate([
+                'name' => 'required',
+                'contact_details' => 'required|email',
+                'comments' => 'nullable'
+            ]);
 
-        $order = Order::create($inputs);
+            $order = Order::create($inputs);
+            foreach ($cartProducts as $product) {
+                $order->products()->attach($product->id, ['price' => $product->price]);
+            }
 
-        foreach ($productsCart as $product) {
-            $orderProduct = new OrderProduct();
-            $orderProduct->order_id = $order->id;
-            $orderProduct->product_id = $product->id;
-            $orderProduct->price = $product->price;
-            $orderProduct->save();
+            Mail::to(config('mail.to'))
+                ->send(new OrderConfirmation($cartProducts, $inputs));
+            $request->session()->forget('cart');
         }
-
-        Mail::to(config('mail.to'))
-            ->send(new HTMLmail($productsCart, $inputs));
-        $request->session()->forget('cart');
-
         return redirect()->route('products.index')
             ->with('success', __('Email sent!'));
     }
