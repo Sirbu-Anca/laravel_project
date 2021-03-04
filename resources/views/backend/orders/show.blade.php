@@ -6,7 +6,7 @@
 
 @section('content')
     @php
-        /* @var Order $order */use App\Models\Order
+        /* @var \App\Models\Order $order */
     @endphp
     <div class="row">
         <div class="col-8">
