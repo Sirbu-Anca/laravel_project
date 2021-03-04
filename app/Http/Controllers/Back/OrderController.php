@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Back;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\OrderProduct;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -17,7 +18,7 @@ class OrderController extends Controller
      */
     public function index(): Factory|View|Application
     {
-        $orders = DB::table('order_product')
+        $orders = OrderProduct::query()
             ->select('order_id', 'price', DB::raw('SUM(price) as total_sum'))
             ->groupBy('order_id')
             ->paginate(5);
