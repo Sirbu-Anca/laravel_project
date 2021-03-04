@@ -39,26 +39,13 @@ Route::prefix('cart')
         Route::post('/', [CartController::class, 'sendEmail'])
             ->name('email.send');
     });
+
 Route::prefix('backend')
-    ->middleware('can:isAdmin')
+    ->middleware('auth')
     ->name('backend.')
     ->group(function () {
-        Route::get('/products', [BackProductController::class, 'index'])
-            ->name('products.index');
-        Route::get('products/create', [BackProductController::class, 'create'])
-            ->name('products.create');
-        Route::post('/products',[BackProductController::class, 'store'])
-            ->name('products.store');
-        Route::get('/products/{product}/edit', [BackProductController::class, 'edit'])
-            ->name('products.edit');
-        Route::put('/products/{product}', [BackProductController::class, 'update'])
-            ->name('products.update');
-        Route::delete('/{product}', [BackProductController::class, 'destroy'])
-            ->name('products.destroy');
-        Route::get('/orders', [OrderController::class, 'index'])
-            ->name('orders.index');
-        Route::get('/orders/{order}', [OrderController::class, 'show'])
-            ->name('orders.show');
+        Route::resource('products', BackProductController::class);
+        Route::resource('orders', OrderController::class)->only([
+            'index', 'show'
+        ]);
     });
-
-

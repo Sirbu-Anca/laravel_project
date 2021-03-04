@@ -12,7 +12,7 @@
                 @foreach ($products as $product)
                     <tr>
                         <th>
-                            @if ($product->image_name)
+                            @if ($product->image)
                                 <img src="{{ $product->getPhotoUrl() }}" alt="{{ __('Product photo') }}"
                                      style="width: 100px;height: 100px">
                             @endif

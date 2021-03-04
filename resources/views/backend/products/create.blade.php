@@ -10,7 +10,7 @@
             @csrf
             <div class="mb-3">
                 <input type="text" class="form-control @error('title') is-invalid @enderror" name="title"
-                       placeholder="{{ __('Title') }}" value="{{ old('title')}}">
+                       placeholder="{{ __('Title') }}" value="{{ old('title') }}">
                 @error('title')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ __($message) }}</strong>
@@ -36,9 +36,9 @@
                 @enderror
             </div>
             <div class="mb-3">
-                <input type="file" class="form-control @error('image_name') is-invalid @enderror" name="image_name"
-                       placeholder="{{ __('Image_name') }}">
-                @error('image_name')
+                <input type="file" class="form-control @error('image') is-invalid @enderror" name="image"
+                       placeholder="{{ __('image') }}">
+                @error('image')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ __($message) }}</strong>
                 </span>

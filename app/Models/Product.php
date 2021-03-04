@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string  $title
  * @property string  $description
  * @property float   $price
- * @property string  $image_name
+ * @property string  $image
  *
  */
 class Product extends Model
@@ -25,7 +25,7 @@ class Product extends Model
         'title',
         'description',
         'price',
-        'image_name',
+        'image',
     ];
 
     /**
@@ -33,7 +33,7 @@ class Product extends Model
      */
     public function getPhotoUrl(): string
     {
-        return asset('storage/products_images/' . $this->image_name);
+        return asset('storage/products_images/' . $this->image);
     }
 
     /**

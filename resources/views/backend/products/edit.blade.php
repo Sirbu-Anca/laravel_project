@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="col-md-3">
-        <form action="{{ route('backend.products.update' ,$product) }}" method="post" enctype="multipart/form-data">
+        <form action="{{ route('backend.products.update', $product) }}" method="post" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="mb-3">
@@ -37,9 +37,9 @@
                 @enderror
             </div>
             <div class="mb-3">
-                <input type="file" class="form-control @error('image_name') is-invalid @enderror" name="image_name"
-                       placeholder="{{ __('Image_name') }}" value="{{ null }}">
-                @error('image_name')
+                <input type="file" class="form-control @error('image') is-invalid @enderror" name="image"
+                       placeholder="{{ __('image') }}">
+                @error('image')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ __($message) }}</strong>
                 </span>

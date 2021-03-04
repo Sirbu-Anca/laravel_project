@@ -44,14 +44,7 @@ class ProductController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $product = Product::create($this->validateProduct($request));
-
-        if ($request->hasFile('image_name')) {
-            $uploaded_file = $request->file('image_name');
-            $file_name = $product->id . '.' . $uploaded_file->extension();
-            $uploaded_file->storeAs('products_images', $file_name, 'public');
-            $product->image_name = $file_name;
-            $product->save();
-        }
+        $this->checkFile($request, $product);
 
         return redirect()
             ->route('backend.products.index')
@@ -80,14 +73,7 @@ class ProductController extends Controller
     public function update(Request $request, Product $product): RedirectResponse
     {
         $product->update($this->validateProduct($request));
-
-        if ($request->hasFile('image_name')) {
-            $uploaded_file = $request->file('image_name');
-            $file_name = $product->id . '.' . $uploaded_file->extension();
-            $uploaded_file->storeAs('products_images', $file_name, 'public');
-            $product->image_name = $file_name;
-            $product->update();
-        }
+        $this->checkFile($request, $product);
 
         return redirect()
             ->route('backend.products.index')
@@ -104,8 +90,19 @@ class ProductController extends Controller
             'title' => 'required',
             'description' => 'required',
             'price' => 'required',
-            'image_name' => 'image|mimes:jpg, jpeg, png, bmp, gif, svg',
+            'image' => 'image|mimes:jpg, jpeg, png, bmp, gif, svg',
         ]);
+    }
+
+    protected function checkFile(Request $request, $product)
+    {
+        if ($request->hasFile('image')) {
+            $uploadedFile = $request->file('image');
+            $filename = $product->id . '.' . $uploadedFile->extension();
+            $uploadedFile->storeAs('products_images', $filename, 'public');
+            $product->update(['image' => $filename]);
+        }
+        return $product;
     }
 
     /**
@@ -118,8 +115,8 @@ class ProductController extends Controller
     {
         $product = Product::query()->findOrFail($product->id);
         $product->delete();
-        $path = 'public\products_images\\' . $product->image_name;
-        if ($product->image_name) {
+        $path = 'public\products_images\\' . $product->image;
+        if ($product->image) {
             Storage::disk()->delete($path);
         }
 
