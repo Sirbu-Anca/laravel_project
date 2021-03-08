@@ -41,11 +41,8 @@
                         '<td>' + product.title + '</td>',
                         '<td>' + product.description + '</td>',
                         '<td>' + product.price + '</td>',
-                        '<td>' +
-                        '<form action="'+ addRoute +'" method="post">'+
-                        '<input type="hidden" name="productId" value="'+ product.id +'">'+
-                        '<button>Add</button>'+
-                        '</form>'+
+                        '<td>'+
+                        '<button value="'+product.id+'">Add</button>'+
                         '</td>',
                         '</tr>'
                     ].join('');
@@ -55,6 +52,7 @@
             }
 
             $('button').click(function () {
+                console.log('adasd')
                 $.ajax(addRoute, {
                     dataType: 'json',
                     type:'POST',
