@@ -28,10 +28,15 @@ Route::get('/home', [HomeController::class, 'index'])
 Route::get('/', [ProductController::class, 'index'])
     ->name('products.index');
 
+Route::get('/getProducts',[ ProductController::class, 'getProducts'])
+    ->name('products.show');
+
 Route::prefix('cart')
     ->group(function () {
         Route::get('/', [CartController::class, 'index'])
             ->name('cart.index');
+        Route::get('/', [CartController::class, 'displayCartProducts'])
+            ->name('cart.show');
         Route::post('/cart', [CartController::class, 'store'])
             ->name('cart.store');
         Route::delete('/{product}', [CartController::class, 'destroy'])

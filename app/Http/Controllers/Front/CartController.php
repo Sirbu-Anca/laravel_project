@@ -22,13 +22,18 @@ class CartController extends Controller
      * Display a listing of the resource.
      *
      */
-    public function index(): Factory|View|RedirectResponse|Application
+    public function index()
+    {
+        return view('javascript');
+    }
+
+    public function displayCartProducts()
     {
         $cartProducts = $this->getCartProducts();
         if (count($cartProducts)) {
-            return view('front.cart', compact('cartProducts'));
+            return response()->json($cartProducts);
         } else {
-            return redirect()->route('products.index')
+            return redirect()->route('products.show')
                 ->with('warning', __('Your cart is empty'));
         }
     }
@@ -50,16 +55,17 @@ class CartController extends Controller
 
     /**
      * @param Request $request
-     * @return RedirectResponse
+
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $id = $request->input('productId');
         $product = Product::query()->findOrFail($id);
         $request->session()->put('cart.' . $id, $id);
-        return redirect()
-            ->route('products.index')
-            ->with('success', $product->title . __(' successfully added in cart'));
+        return response()->json($product);
+//        return redirect()
+//            ->route('products.index')
+//            ->with('success', $product->title . __(' successfully added in cart'));
     }
 
     /**shop

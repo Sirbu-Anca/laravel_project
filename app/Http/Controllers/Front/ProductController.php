@@ -4,9 +4,6 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 
 class ProductController extends Controller
 {
@@ -14,7 +11,12 @@ class ProductController extends Controller
      * Display a listing of the resource.
      *
      */
-    public function index(): Factory|View|Application
+    public function index()
+    {
+        return view('javascript');
+    }
+
+    public function getProducts()
     {
         if (count(session()->get('cart', []))) {
             $cartIds = array_values(session()->get('cart'));
@@ -25,6 +27,7 @@ class ProductController extends Controller
             $products = Product::query()
                 ->paginate(5);
         }
-        return view('front.index', compact('products'));
+        return response()->json($products);
     }
+
 }
