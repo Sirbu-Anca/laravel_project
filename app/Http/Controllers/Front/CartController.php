@@ -24,24 +24,19 @@ class CartController extends Controller
      */
     public function index()
     {
-        return view('javascript');
+        return view('main');
     }
 
     public function displayCartProducts()
     {
         $cartProducts = $this->getCartProducts();
-        if (count($cartProducts)) {
-            return response()->json($cartProducts);
-        } else {
-            return redirect()->route('products.show')
-                ->with('warning', __('Your cart is empty'));
-        }
+        return response()->json($cartProducts);
     }
 
     /**
      * @return Collection|array
      */
-    protected function getCartProducts(): Collection|array
+    protected function getCartProducts()
     {
         $cartProducts = [];
         if (count(session()->get('cart', []))) {
@@ -55,7 +50,6 @@ class CartController extends Controller
 
     /**
      * @param Request $request
-
      */
     public function store(Request $request)
     {
@@ -63,16 +57,9 @@ class CartController extends Controller
         $product = Product::query()->findOrFail($id);
         $request->session()->put('cart.' . $id, $id);
         return response()->json($product);
-//        return redirect()
-//            ->route('products.index')
-//            ->with('success', $product->title . __(' successfully added in cart'));
     }
 
-    /**shop
-     * @param Request $request
-     * @return RedirectResponse
-     */
-    public function sendEmail(Request $request): RedirectResponse
+    public function sendEmail(Request $request)
     {
         $cartProducts = $this->getCartProducts();
 
@@ -91,7 +78,12 @@ class CartController extends Controller
             Mail::to(config('mail.to'))
                 ->send(new OrderConfirmation($cartProducts, $inputs));
             $request->session()->forget('cart');
+
+            if ($request->ajax()) {
+                return response()->json();
+            }
         }
+
         return redirect()->route('products.index')
             ->with('success', __('Email sent!'));
     }
@@ -106,6 +98,6 @@ class CartController extends Controller
     {
         $request->session()->forget('cart.' . $product->id);
         return redirect()
-            ->route("cart.index");
+            ->route("cart.show");
     }
 }

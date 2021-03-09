@@ -1,7 +1,6 @@
 <html>
 <head>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <!-- Load the jQuery JS library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
@@ -9,21 +8,16 @@
 </head>
 <script type="text/javascript">
     $(document).ready(function () {
+        const showCartRoute = '{{ route('cart.show') }}';
+        const showProducts = '{{ route('products.get') }}';
+        const submitRoute = '{{ route('email.send') }}';
+        const addRoute = '{{ route('cart.store') }}';
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+        });
 
-        /**
-         * A function that takes a products array and renders it's html
-         *
-         * The products array must be in the form of
-         * [{
-         *     "title": "Product 1 title",
-         *     "description": "Product 1 desc",
-         *     "price": 1
-         * },{
-         *     "title": "Product 2 title",
-         *     "description": "Product 2 desc",
-         *     "price": 2
-         * }]
-         */
 
         function renderList(products) {
             html = [
@@ -41,8 +35,8 @@
                     '<td>' + product.title + '</td>',
                     '<td>' + product.description + '</td>',
                     '<td>' + product.price + '</td>',
-                    '<td>'+
-                    '<button class="addToCart" value="'+product.id+'">Add</button>'+
+                    '<td>' +
+                    '<button class="addToCart" value="' + product.id + '">Add</button>' +
                     '</td>',
                     '</tr>'
                 ].join('');
@@ -51,14 +45,12 @@
             return html;
         }
 
-        const addRoute = '{{ route('cart.store') }}';
-        $('.list').on('click', 'button.addToCart', function() {
+        $('.list').on('click', 'button.addToCart', function () {
             $.ajax(addRoute, {
                 dataType: 'json',
-                type:'POST',
-                data:{
-                    _token: '{{ csrf_token() }}',
-                    productId:this.value,
+                type: 'POST',
+                data: {
+                    productId: this.value,
                 },
                 success: function () {
                     window.onhashchange();
@@ -89,23 +81,48 @@
             return html;
         }
 
-        $('.list').on('click', 'button.removeFromCart', function() {
+        $('.list').on('click', 'button.removeFromCart', function () {
             let removeRoute = '{{ route('cart.destroy', 'remove_id') }}';
             removeRoute = removeRoute.replace('remove_id', this.value)
             let tr = $(this).parents('tr');
             $.ajax(removeRoute, {
                 dataType: 'json',
-                type:'POST',
-                data:{
-                    _token: '{{ csrf_token() }}',
-                    productId:this.value,
+                type: 'POST',
+                data: {
+                    productId: this.value,
                     _method: 'delete',
                 },
                 success: function () {
                     tr.remove();
                 }
             });
-        })
+        });
+
+
+        $(function () {
+            $('#checkout').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax(submitRoute, {
+                    type: 'POST',
+                    data: {
+                        name: this.name.value,
+                        contact_details: this.contact_details.value,
+                        comments: this.comments.value,
+                    },
+                    success: function () {
+                        document.getElementById('checkout').reset();
+                        window.location = '#'
+                        alert('Order sent!')
+                    },
+                    error: function (xhr) {
+                        alert(xhr.responseText);
+                    },
+
+                });
+
+            });
+
+        });
 
         /**
          * URL hash change handler
@@ -114,16 +131,16 @@
             // First hide all the pages
             $('.page').hide();
 
-            switch(window.location.hash) {
+            switch (window.location.hash) {
                 case '#cart':
                     // Show the cart page
                     $('.cart').show();
                     // Load the cart products from the server
-                    $.ajax('{{ route('cart.show') }}', {
+                    $.ajax(showCartRoute, {
                         dataType: 'json',
                         success: function (response) {
                             // Render the products in the cart list
-                            $('.cart .list').html(renderCartList(response));
+                          $('.cart .list').html(renderCartList(response));
                         }
                     });
                     break;
@@ -132,7 +149,7 @@
                     // Show the index page
                     $('.index').show();
                     // Load the index products from the server
-                    $.ajax('{{ route('products.get') }}', {
+                    $.ajax(showProducts, {
                         dataType: 'json',
                         success: function (response) {
                             // Render the products in the index list
@@ -142,7 +159,6 @@
                     break;
             }
         }
-
         window.onhashchange();
     });
 </script>
@@ -160,7 +176,36 @@
 <div class="page cart">
     <!-- The cart element where the products list is rendered -->
     <table class="list"></table>
-
+    <div class="col-md-3">
+        <form action="" method="post" id="checkout">
+            @csrf
+            <div class="mb-3">
+                <input type="text" class="form-control @error('name') is-invalid @enderror" name="name"
+                       placeholder="{{ __('Name') }}" value="{{ old('name') }}">
+                @error('name')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ __($message) }}</strong>
+                </span>
+                @enderror
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control @error('contact_details') is-invalid @enderror"
+                       name="contact_details" placeholder="{{ __('Contact details') }}"
+                       value="{{ old('contact_details') }}">
+                @error('contact_details')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ __($message) }}</strong>
+                </span>
+                @enderror
+            </div>
+            <div class="mb-3">
+                <textarea name="comments" class="form-control" rows="3" placeholder="{{ __('Comments') }}"></textarea>
+            </div>
+            <div>
+                <button type="submit">{{ __('Checkout') }}</button>
+            </div>
+        </form>
+    </div>
     <!-- A link to go to the index by changing the hash -->
     <a href="#" class="button">Go to index</a>
 </div>
