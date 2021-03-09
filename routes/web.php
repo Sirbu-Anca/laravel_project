@@ -29,7 +29,7 @@ Route::get('/', [ProductController::class, 'index'])
     ->name('products.index');
 
 Route::get('/getProducts',[ ProductController::class, 'getProducts'])
-    ->name('products.show');
+    ->name('products.get');
 
 Route::prefix('cart')
     ->group(function () {

@@ -13,7 +13,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('javascript');
+        return view('main');
     }
 
     public function getProducts()
