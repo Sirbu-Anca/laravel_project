@@ -27,7 +27,11 @@ class ProductController extends Controller
             $products = Product::query()
                 ->paginate(5);
         }
-        return response()->json($products);
+        if (request()->ajax()) {
+            return response()->json($products);
+        } else {
+            return view('front.index', compact('products'));
+        }
     }
 
 }
