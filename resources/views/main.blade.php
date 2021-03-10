@@ -18,7 +18,6 @@
             },
         });
 
-
         function renderList(products) {
             html = [
                 '<tr>',
@@ -52,7 +51,8 @@
                 data: {
                     productId: this.value,
                 },
-                success: function () {
+                success: function (response) {
+                    alert(response.message)
                     window.onhashchange();
                 }
             });
@@ -92,12 +92,12 @@
                     productId: this.value,
                     _method: 'delete',
                 },
-                success: function () {
+                success: function (response) {
+                    alert(response.message)
                     tr.remove();
                 }
             });
         });
-
 
         $(function () {
             $('#checkout').on('submit', function (e) {
@@ -111,17 +111,14 @@
                     },
                     success: function () {
                         document.getElementById('checkout').reset();
-                        window.location = '#'
                         alert('Order sent!')
                     },
                     error: function (xhr) {
                         alert(xhr.responseText);
                     },
-
                 });
 
             });
-
         });
 
         /**
@@ -139,8 +136,13 @@
                     $.ajax(showCartRoute, {
                         dataType: 'json',
                         success: function (response) {
-                            // Render the products in the cart list
-                          $('.cart .list').html(renderCartList(response));
+                            if (response.length !== 0) {
+                                // Render the products in the cart list
+                                $('.cart .list').html(renderCartList(response));
+                            } else {
+                                window.location = '#';
+                                alert('Your cart is empty!');
+                            }
                         }
                     });
                     break;
@@ -152,8 +154,14 @@
                     $.ajax(showProducts, {
                         dataType: 'json',
                         success: function (response) {
-                            // Render the products in the index list
-                            $('.index .list').html(renderList(response.data));
+                            debugger
+                            if (response.data.length !== 0) {
+                                // Render the products in the index list
+                                $('.index .list').html(renderList(response.data));
+                            } else {
+                                window.location = '#cart';
+                                alert('All products are in your cart!');
+                            }
                         }
                     });
                     break;
@@ -169,7 +177,7 @@
     <table class="list"></table>
 
     <!-- A link to go to the cart by changing the hash -->
-    <a href="#cart" class="button">Go to cart</a>
+    <a href="#cart" class="button">{{ __('Go to cart') }}</a>
 </div>
 
 <!-- The cart page -->
@@ -178,25 +186,14 @@
     <table class="list"></table>
     <div class="col-md-3">
         <form action="" method="post" id="checkout">
-            @csrf
             <div class="mb-3">
-                <input type="text" class="form-control @error('name') is-invalid @enderror" name="name"
+                <input type="text" class="form-control" name="name"
                        placeholder="{{ __('Name') }}" value="{{ old('name') }}">
-                @error('name')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ __($message) }}</strong>
-                </span>
-                @enderror
             </div>
             <div class="mb-3">
-                <input type="text" class="form-control @error('contact_details') is-invalid @enderror"
+                <input type="text" class="form-control "
                        name="contact_details" placeholder="{{ __('Contact details') }}"
                        value="{{ old('contact_details') }}">
-                @error('contact_details')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ __($message) }}</strong>
-                </span>
-                @enderror
             </div>
             <div class="mb-3">
                 <textarea name="comments" class="form-control" rows="3" placeholder="{{ __('Comments') }}"></textarea>
@@ -207,7 +204,8 @@
         </form>
     </div>
     <!-- A link to go to the index by changing the hash -->
-    <a href="#" class="button">Go to index</a>
+    <a href="#" class="button">{{ __('Go to index') }}</a>
 </div>
+<script src="public/js/scripts.js"></script>
 </body>
 </html>

@@ -30,7 +30,11 @@ class CartController extends Controller
     public function displayCartProducts()
     {
         $cartProducts = $this->getCartProducts();
-        return response()->json($cartProducts);
+        if (\request()->ajax()) {
+            return response()->json($cartProducts);
+        } else {
+            return view('front.cart', compact('cartProducts'));
+        }
     }
 
     /**
@@ -56,7 +60,15 @@ class CartController extends Controller
         $id = $request->input('productId');
         $product = Product::query()->findOrFail($id);
         $request->session()->put('cart.' . $id, $id);
-        return response()->json($product);
+        if ($request->ajax()) {
+            return response()->json(['message' => $product->title . __(' successfully added to cart.' )]);
+        } else {
+            return redirect()
+                ->route('products.index')
+                ->with('success', $product->title . __(' successfully added in cart'));
+        }
+
+
     }
 
     public function sendEmail(Request $request)
@@ -79,25 +91,29 @@ class CartController extends Controller
                 ->send(new OrderConfirmation($cartProducts, $inputs));
             $request->session()->forget('cart');
 
-            if ($request->ajax()) {
-                return response()->json();
-            }
         }
 
-        return redirect()->route('products.index')
-            ->with('success', __('Email sent!'));
+        if ($request->ajax()) {
+            return response()->json(['message' => __('Order sent!')]);
+        } else {
+            return redirect()->route('products.index')
+                ->with('success', __('Order sent!'));
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      * @param Request $request
      * @param Product $product
-     * @return RedirectResponse
      */
-    public function destroy(Request $request, Product $product): RedirectResponse
+    public function destroy(Request $request, Product $product)
     {
         $request->session()->forget('cart.' . $product->id);
-        return redirect()
-            ->route("cart.show");
+        if ($request->ajax()) {
+            return response()->json(['message' => $product->title . __(' removed from cart successfully!')]);
+        } else {
+            return redirect()
+                ->route("cart.show");
+        }
     }
 }
