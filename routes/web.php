@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Back\OrderController;
 use App\Http\Controllers\Back\ProductController as BackProductController;
 use App\Http\Controllers\Front\CartController;
@@ -44,6 +45,10 @@ Route::prefix('cart')
         Route::post('/', [CartController::class, 'sendEmail'])
             ->name('email.send');
     });
+
+Route::get('/login-form', function () {
+    return view('login_ajax');
+})->name('login.form');
 
 Route::prefix('backend')
     ->middleware('auth')

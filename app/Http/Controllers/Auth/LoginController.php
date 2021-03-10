@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use http\Env\Response;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -40,18 +42,13 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     */
-    protected function authenticated(Request $request)
+    protected function authenticated(Request $request, $user)
     {
-        if (\Auth::check()) {
-            return redirect()
-                ->route('backend.products.index');
+        if ($request->ajax()) {
+            return \response()->json(['message' => $user . ' you are logged in.']);
         } else {
             return redirect()
-                ->route('products.index');
+                ->route('products.show');
         }
     }
 }

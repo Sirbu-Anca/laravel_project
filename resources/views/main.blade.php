@@ -1,3 +1,4 @@
+
 <html>
 <head>
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -12,6 +13,10 @@
         const showProducts = '{{ route('products.get') }}';
         const submitRoute = '{{ route('email.send') }}';
         const addRoute = '{{ route('cart.store') }}';
+        const loginRoute = '{{ route('login') }}'
+        const loginFormRoute = '{{ route('login.form') }}'
+        const listAllProducts = '{{ route('backend.products.index') }}'
+        let   isAuthenticate = false;
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -111,13 +116,40 @@
                     },
                     success: function () {
                         document.getElementById('checkout').reset();
+                        window.location = '#';
                         alert('Order sent!')
                     },
                     error: function (xhr) {
-                        alert(xhr.responseText);
+                        $.each(xhr.responseJSON.errors, function (key, error) {
+                            alert(error)
+                        });
                     },
                 });
+            });
+        });
 
+        $(function () {
+            $('#login').on('submit', function (e) {
+                e.preventDefault();
+                console.log('I m still ok till here.');
+                debugger
+                $.ajax(loginRoute, {
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        email: this.email.value,
+                        password: this.password.value,
+                    },
+                    success: function (response) {
+                        console.log(response)
+                        debugger;
+                    },
+                    error: function (xhr) {
+                        $.each(xhr.responseJSON.errors, function (key, error) {
+                            alert(error)
+                        });
+                    },
+                });
             });
         });
 
@@ -146,6 +178,29 @@
                         }
                     });
                     break;
+                    case '#login':
+                        // Show the login page
+                        $('.login').show();
+                        $.ajax(loginFormRoute, {
+                            dataType: 'html',
+                            success: function (html) {
+                                $('.login').html(html)
+                            }
+                        });
+                    break;
+
+                case '#products':
+                    // Show the login page
+                    $('.products').show();
+                    $.ajax(listAllProducts, {
+                        dataType: 'json',
+                        success: function (response) {
+                            debugger;
+                            $('.products .list').html(renderList(response.data));
+                        }
+                    });
+                    break;
+
                 default:
                     // If all else fails, always default to index
                     // Show the index page
@@ -154,7 +209,6 @@
                     $.ajax(showProducts, {
                         dataType: 'json',
                         success: function (response) {
-                            debugger
                             if (response.data.length !== 0) {
                                 // Render the products in the index list
                                 $('.index .list').html(renderList(response.data));
@@ -171,6 +225,38 @@
     });
 </script>
 <body>
+<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" style="float:right">
+    <!-- Authentication Links -->
+    @guest
+        <a class="dropdown-item" href="#login">{{ __('Login') }}</a>
+        @if (Route::has('register'))
+            <a class="dropdown-item" href="#register">{{ __('Register') }}</a>
+        @endif
+    @else
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="{{ route('logout') }}"
+               onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                {{ __('Logout') }}
+            </a>
+            <form id="logout-form" action="#logout" method="POST" class="d-none">
+            </form>
+        </div>
+    @endguest
+</div>
+<!-- The login page -->
+<div class="page login">
+        <!-- Form login -->
+</div>
+<!-- The products page -->
+
+<div class="page products">
+    <!-- The index element where the products list is rendered -->
+    <table class="list"></table>
+    <!-- A link to go to the cart by changing the hash -->
+    <a href="#product" class="button">{{ __('Add new product') }}</a>
+</div>
+
 <!-- The index page -->
 <div class="page index">
     <!-- The index element where the products list is rendered -->
@@ -206,6 +292,6 @@
     <!-- A link to go to the index by changing the hash -->
     <a href="#" class="button">{{ __('Go to index') }}</a>
 </div>
-<script src="public/js/scripts.js"></script>
 </body>
 </html>
+
