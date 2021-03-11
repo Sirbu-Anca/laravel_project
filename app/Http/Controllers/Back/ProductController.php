@@ -14,22 +14,22 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Application|Factory|View
-     */
-    public function index(): View|Factory|Application
+    public function index()
     {
         $products = Product::query()
-            ->paginate(5);
-        return view('backend.products.index', compact('products'));
+            ->paginate(10);
+        if (request()->ajax()) {
+            return response()->json($products);
+        } else {
+            return view('backend.products.index', compact('products'));
+        }
     }
 
     /**
      * Show the form for creating a new resource.
      * @return Application|Factory|View
      */
-    public function create(): Factory|View|Application
+    public function create()
     {
         return view('backend.products.create');
     }
@@ -38,17 +38,20 @@ class ProductController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     *
-     * @return RedirectResponse
+
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $product = Product::create($this->validateProduct($request));
         $this->saveProductFile($request, $product);
 
-        return redirect()
-            ->route('backend.products.index')
-            ->with('success', __('New product successfully added.'));
+        if ($request->ajax()) {
+            return response()->json($product, ['message' => __('New product successfully added!')]);
+        } else {
+            return redirect()
+                ->route('backend.products.index')
+                ->with('success', __('New product successfully added.'));
+        }
 
     }
 
@@ -58,7 +61,7 @@ class ProductController extends Controller
      * @param Product $product
      * @return Application|Factory|View
      */
-    public function edit(Product $product): Factory|View|Application
+    public function edit(Product $product)
     {
         return view('backend.products.edit', compact('product'));
     }
@@ -68,9 +71,8 @@ class ProductController extends Controller
      *
      * @param Request $request
      * @param Product $product
-     * @return RedirectResponse
      */
-    public function update(Request $request, Product $product): RedirectResponse
+    public function update(Request $request, Product $product)
     {
         $product->update($this->validateProduct($request));
         $this->saveProductFile($request, $product);
@@ -107,11 +109,10 @@ class ProductController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * @param Request $request
      * @param Product $product
-     * @return RedirectResponse
-     * @throws Exception
      */
-    public function destroy(Product $product): RedirectResponse
+    public function destroy(Request $request, Product $product)
     {
         $product = Product::query()->findOrFail($product->id);
         $product->delete();
@@ -120,8 +121,14 @@ class ProductController extends Controller
             Storage::disk()->delete($path);
         }
 
-        return redirect()
-            ->route('backend.products.index')
-            ->with('success', __('Product deleted.'));
+        if ($request->ajax()) {
+            return response()->json(['message' => $product->title . __(' delete successfully!')]);
+        } else {
+            return redirect()
+                ->route("backend.products.index");
+        }
+//        return redirect()
+//            ->route('backend.products.index')
+//            ->with('success', __('Product deleted.'));
     }
 }

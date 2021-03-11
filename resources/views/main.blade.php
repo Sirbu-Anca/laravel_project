@@ -9,14 +9,21 @@
 </head>
 <script type="text/javascript">
     $(document).ready(function () {
-        const showCartRoute = '{{ route('cart.show') }}';
-        const showProducts = '{{ route('products.get') }}';
-        const submitRoute = '{{ route('email.send') }}';
-        const addRoute = '{{ route('cart.store') }}';
-        const loginRoute = '{{ route('login') }}'
-        const loginFormRoute = '{{ route('login.form') }}'
-        const listAllProducts = '{{ route('backend.products.index') }}'
-        let   isAuthenticate = false;
+        let indexProductsRoute = '{{ route('products.get') }}';
+        let addToCartRoute = '{{ route('cart.store') }}';
+
+        let cartProductsRoute = '{{ route('cart.show') }}';
+        let sendOrderRoute = '{{ route('email.send') }}';
+        let removeFromCartRoute = '{{ route('cart.destroy', 'remove_id') }}';
+
+        let loginRoute = '{{ route('login') }}';
+        let registerRoute = '{{ route('register') }}'
+        let logoutRoute = '{{ route('logout') }}';
+
+        let allProductsRoute = '{{ route('backend.products.index') }}';
+        let deleteProductRoute = '{{ route('backend.products.destroy', 'delete_id') }}';
+        let addProductRoute = '{{ route('backend.products.store') }}'
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -48,20 +55,31 @@
 
             return html;
         }
+        function renderAllProducts(products) {
+            html = [
+                '<tr>',
+                '<th>Title</th>',
+                '<th>Description</th>',
+                '<th>Price</th>',
+                '<th>Action</th>',
+                '</tr>'
+            ].join('');
 
-        $('.list').on('click', 'button.addToCart', function () {
-            $.ajax(addRoute, {
-                dataType: 'json',
-                type: 'POST',
-                data: {
-                    productId: this.value,
-                },
-                success: function (response) {
-                    alert(response.message)
-                    window.onhashchange();
-                }
+            $.each(products, function (key, product) {
+                html += [
+                    '<tr>',
+                    '<td>' + product.title + '</td>',
+                    '<td>' + product.description + '</td>',
+                    '<td>' + product.price + '</td>',
+                    '<td>' +
+                    '<button class="editProduct" value="' + product.id + '">Edit</button>' +
+                    '<td><button class="deleteProduct" value="' + product.id + '">Delete</button></td>',
+                    '</td>',
+                    '</tr>'
+                ].join('');
             });
-        })
+            return html;
+        }
 
         function renderCartList(products) {
             html = [
@@ -86,11 +104,27 @@
             return html;
         }
 
-        $('.list').on('click', 'button.removeFromCart', function () {
-            let removeRoute = '{{ route('cart.destroy', 'remove_id') }}';
-            removeRoute = removeRoute.replace('remove_id', this.value)
+
+        // Add to cart
+        $('.list').on('click', 'button.addToCart', function () {
+            $.ajax(addToCartRoute, {
+                dataType: 'json',
+                type: 'POST',
+                data: {
+                    productId: this.value,
+                },
+                success: function (response) {
+                    alert(response.message)
+                    window.onhashchange();
+                }
+            });
+        })
+
+        //Delete product
+        $('.list').on('click', 'button.deleteProduct', function () {
+            deleteProductRoute = deleteProductRoute.replace('delete_id', this.value)
             let tr = $(this).parents('tr');
-            $.ajax(removeRoute, {
+            $.ajax(deleteProductRoute, {
                 dataType: 'json',
                 type: 'POST',
                 data: {
@@ -104,10 +138,55 @@
             });
         });
 
+        // add new product
+        $(function () {
+            $('#addProduct').on('submit', function (e) {
+                e.preventDefault();
+                let data = new FormData();
+                debugger
+                $.ajax(addProductRoute, {
+                    type: 'POST',
+                    data: new FormData(this),
+                    dataType:'JSON',
+                    success: function (data) {
+                        console.log(data)
+                        debugger
+                        // if (data !== 0) {
+                        //     window.location = '#products';
+                        // }
+                    },
+                    error: function (xhr) {
+                        $.each(xhr.responseJSON.errors, function (key, error) {
+                            alert(error)
+                        });
+                    },
+                });
+            });
+        });
+
+        // remove product from cart
+        $('.list').on('click', 'button.removeFromCart', function () {
+            removeFromCartRoute = removeFromCartRoute.replace('remove_id', this.value)
+            let tr = $(this).parents('tr');
+            $.ajax(removeFromCartRoute, {
+                dataType: 'json',
+                type: 'POST',
+                data: {
+                    productId: this.value,
+                    _method: 'delete',
+                },
+                success: function (response) {
+                    alert(response.message)
+                    tr.remove();
+                }
+            });
+        });
+
+        // Send order
         $(function () {
             $('#checkout').on('submit', function (e) {
                 e.preventDefault();
-                $.ajax(submitRoute, {
+                $.ajax(sendOrderRoute, {
                     type: 'POST',
                     data: {
                         name: this.name.value,
@@ -128,21 +207,64 @@
             });
         });
 
+        // Login
         $(function () {
             $('#login').on('submit', function (e) {
                 e.preventDefault();
-                console.log('I m still ok till here.');
-                debugger
                 $.ajax(loginRoute, {
                     type: 'POST',
-                    dataType: 'json',
                     data: {
                         email: this.email.value,
                         password: this.password.value,
                     },
-                    success: function (response) {
-                        console.log(response)
-                        debugger;
+                    success: function (data) {
+                        if (data !== 0) {
+                            window.location = '#products';
+                        }
+                    },
+                    error: function (xhr) {
+                        $.each(xhr.responseJSON.errors, function (key, error) {
+                            alert(error)
+                        });
+                    }
+
+                });
+            });
+        });
+
+        // register
+        $(function () {
+            $('#register').on('submit', function (e) {
+                e.preventDefault();
+                // debugger
+                $.ajax(registerRoute, {
+                    type: 'POST',
+                    data: {
+                        name: this.name.value,
+                        email: this.email.value,
+                        password: this.password.value,
+                        password_confirmation: this.password_confirmation.value,
+                    },
+                    success: function () {
+                        window.location = '#products';
+                    },
+                    error: function (xhr) {
+                        $.each(xhr.responseJSON.errors, function (key, error) {
+                            alert(error)
+                        });
+                    },
+                });
+            });
+        });
+
+        // logout
+        $(function () {
+            $('#logout-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax(logoutRoute, {
+                    type: 'POST',
+                    success: function () {
+                        window.location = '#';
                     },
                     error: function (xhr) {
                         $.each(xhr.responseJSON.errors, function (key, error) {
@@ -163,12 +285,12 @@
             switch (window.location.hash) {
                 case '#cart':
                     // Show the cart page
-                    $('.cart').show();
                     // Load the cart products from the server
-                    $.ajax(showCartRoute, {
+                    $.ajax(cartProductsRoute, {
                         dataType: 'json',
                         success: function (response) {
                             if (response.length !== 0) {
+                                $('.cart').show();
                                 // Render the products in the cart list
                                 $('.cart .list').html(renderCartList(response));
                             } else {
@@ -178,27 +300,35 @@
                         }
                     });
                     break;
-                    case '#login':
-                        // Show the login page
-                        $('.login').show();
-                        $.ajax(loginFormRoute, {
-                            dataType: 'html',
-                            success: function (html) {
-                                $('.login').html(html)
-                            }
-                        });
+
+                case '#login':
+                    // Show the login page
+                    $('.login').show();
+                    break;
+
+                case '#register':
+                    // Show the login page
+                    $('.register').show();
                     break;
 
                 case '#products':
-                    // Show the login page
-                    $('.products').show();
-                    $.ajax(listAllProducts, {
+                    // Show the products page
+                    $.ajax(allProductsRoute, {
                         dataType: 'json',
                         success: function (response) {
-                            debugger;
-                            $('.products .list').html(renderList(response.data));
+                            if (response.data.length !== 0) {
+                                $('.products').show();
+                                $('.products .list').html(renderAllProducts(response.data));
+                            } else {
+                                alert('No products found!')
+                            }
                         }
                     });
+                    break;
+
+                case '#product':
+                    // Show create product page
+                    $('.create-product').show();
                     break;
 
                 default:
@@ -206,7 +336,7 @@
                     // Show the index page
                     $('.index').show();
                     // Load the index products from the server
-                    $.ajax(showProducts, {
+                    $.ajax(indexProductsRoute, {
                         dataType: 'json',
                         success: function (response) {
                             if (response.data.length !== 0) {
@@ -234,27 +364,83 @@
         @endif
     @else
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="{{ route('logout') }}"
-               onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                {{ __('Logout') }}
-            </a>
-            <form id="logout-form" action="#logout" method="POST" class="d-none">
+            <form id="logout-form" action="" method="POST" class="d-none">
+                <button type="submit">{{ __('Logout') }}</button>
             </form>
         </div>
     @endguest
 </div>
 <!-- The login page -->
 <div class="page login">
-        <!-- Form login -->
-</div>
-<!-- The products page -->
+    <form method="POST" action="" id="login">
+        <div class="form-group row">
+            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
-<div class="page products">
-    <!-- The index element where the products list is rendered -->
-    <table class="list"></table>
-    <!-- A link to go to the cart by changing the hash -->
-    <a href="#product" class="button">{{ __('Add new product') }}</a>
+            <div class="col-md-6">
+                <input id="email-login" type="email" class="form-control " name="email"
+                       value="{{ old('email') }}" autocomplete="email" >
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
+
+            <div class="col-md-6">
+                <input id="password-login" type="password" class="form-control"
+                       name="password" autocomplete="current-password">
+            </div>
+        </div>
+        <div class="form-group row mb-0">
+            <div class="col-md-8 offset-md-4">
+                <button type="submit">
+                    {{ __('Login') }}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- The register page -->
+
+<div class="page register">
+    <form method="POST" action="" id="register">
+        <div class="form-group row">
+            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
+
+            <div class="col-md-6">
+                <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+
+            <div class="col-md-6">
+                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autocomplete="email">
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
+            <div class="col-md-6">
+                <input id="password" type="password" class="form-control" name="password" required autocomplete="new-password">
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}</label>
+            <div class="col-md-6">
+                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+            </div>
+        </div>
+
+        <div class="form-group row mb-0">
+            <div class="col-md-6 offset-md-4">
+                <button type="submit" class="btn btn-primary">
+                    {{ __('Register') }}
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
 
 <!-- The index page -->
@@ -268,8 +454,9 @@
 
 <!-- The cart page -->
 <div class="page cart">
-    <!-- The cart element where the products list is rendered -->
-    <table class="list"></table>
+<!-- The cart element where the products list is rendered -->
+<table class="list"></table>
+<!-- The form element where the customer fill contact details for order-->
     <div class="col-md-3">
         <form action="" method="post" id="checkout">
             <div class="mb-3">
@@ -288,9 +475,73 @@
                 <button type="submit">{{ __('Checkout') }}</button>
             </div>
         </form>
+        <a href="#" class="button">{{ __('Go to index') }}</a>
     </div>
-    <!-- A link to go to the index by changing the hash -->
-    <a href="#" class="button">{{ __('Go to index') }}</a>
+</div>
+<!-- A link to go to the index by changing the hash -->
+
+<!-- The products page -->
+<div class="page products">
+    <!-- The products element where the products list is rendered -->
+    <table class="list">
+
+    </table>
+    <!-- A link to go to the product by changing the hash -->
+    <a href="#product" class="button">{{ __('Add new product') }}</a>
+</div>
+
+<!-- The product page -->
+<div class="page create-product">
+    <form action="" method="post" enctype="multipart/form-data" id="addProduct">
+        <div class="mb-3">
+            <input type="text" class="form-control" name="title"
+                   placeholder="{{ __('Title') }}" value="{{ old('title') }}">
+        </div>
+        <div class="mb-3">
+            <input type="text" class="form-control" name="description"
+                   placeholder="{{ __('Description') }}" value="{{ old('description') }}">
+        </div>
+        <div class="mb-3">
+            <input type="number" class="form-control" name="price"
+                   placeholder="{{ __('Price') }}" value="{{ old('price') }}">
+        </div>
+        <div class="mb-3">
+            <input type="file" class="form-control" name="image"
+                   placeholder="{{ __('image') }}">
+        </div>
+        <div>
+            <button type="submit">{{ __('Save') }}</button>
+        </div>
+    </form>
+    <!-- A link to go to the product by changing the hash -->
+    <a href="#products" class="button">{{ __('Products list') }}</a>
+</div>
+
+{{--<!-- Edit product page -->--}}
+{{--<div class="page edit-product">--}}
+{{--        <form action="" method="post" enctype="multipart/form-data">--}}
+{{--            <div class="mb-3">--}}
+{{--                <input type="text" class="form-control" name="title"--}}
+{{--                       placeholder="{{ __('Title') }}" value="{{ $product->title }}">--}}
+{{--            </div>--}}
+{{--            <div class="mb-3">--}}
+{{--                <input type="text" class="form-control" name="description"--}}
+{{--                       placeholder="{{ __('Description') }}" value="{{ $product->description }}">--}}
+{{--            </div>--}}
+{{--            <div class="mb-3">--}}
+{{--                <input type="number" class="form-control" name="price"--}}
+{{--                       placeholder="{{ __('Price') }}" value="{{ $product->price }}">--}}
+{{--            </div>--}}
+{{--            <div class="mb-3">--}}
+{{--                <input type="file" class="form-control" name="image"--}}
+{{--                       placeholder="{{ __('image') }}">--}}
+{{--            </div>--}}
+{{--            <div>--}}
+{{--                <button type="submit">{{ __('Save') }}</button>--}}
+{{--            </div>--}}
+{{--        </form>--}}
+{{--</div>--}}
+
 </div>
 </body>
 </html>
