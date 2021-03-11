@@ -45,10 +45,10 @@ class LoginController extends Controller
     protected function authenticated(Request $request, $user)
     {
         if ($request->ajax()) {
-            return \response()->json(['message' => $user . ' you are logged in.']);
+            return \response()->json($user);
         } else {
             return redirect()
-                ->route('products.show');
+                ->route('products.index');
         }
     }
 }

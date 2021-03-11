@@ -46,12 +46,7 @@ Route::prefix('cart')
             ->name('email.send');
     });
 
-Route::get('/login-form', function () {
-    return view('login_ajax');
-})->name('login.form');
-
 Route::prefix('backend')
-    ->middleware('auth')
     ->name('backend.')
     ->group(function () {
         Route::resource('products', BackProductController::class);
