@@ -23,6 +23,11 @@
         let allProductsRoute = '{{ route('backend.products.index') }}';
         let deleteProductRoute = '{{ route('backend.products.destroy', 'delete_id') }}';
         let addProductRoute = '{{ route('backend.products.store') }}'
+        let editProductRoute = '{{ route('backend.products.edit', 'edit_id') }}';
+        let editHash = '';
+        let updateProductRoute = '{{ route('backend.products.update', 'update_id') }}';
+        let ordersListRoute = '{{ route('backend.orders.index') }}';
+        let orderRoute = '{{ route('backend.orders.show', 'order_id') }}'
         let list = $('.list');
         let isAuthenticated = {{ auth()->check() ? 1 : 0 }};
 
@@ -63,7 +68,7 @@
                 '<th>Title</th>',
                 '<th>Description</th>',
                 '<th>Price</th>',
-                '<th>Action</th>',
+                '<th colspan="2">Action</th>',
                 '</tr>'
             ].join('');
 
@@ -106,6 +111,27 @@
             return html;
         }
 
+        function renderAllOrders(orders) {
+            html = [
+                '<tr>',
+                '<th>Order id</th>',
+                '<th>Total sum</th>', ,
+                '<th>Action</th>',
+                '</tr>'
+            ].join('');
+
+            $.each(orders, function (key, order) {
+                html += [
+                    '<tr>',
+                    '<td>' + order.order_id + '</td>',
+                    '<td>' + order.total_sum + '</td>',
+                    '<td><button class="showOrder" value="' + order.id + '">Show</button></td>',
+                    '</td>',
+                    '</tr>'
+                ].join('');
+            });
+            return html;
+        }
 
 
         // Add to cart
@@ -122,24 +148,6 @@
                 }
             });
         })
-
-        //Delete product
-        list.on('click', 'button.deleteProduct', function () {
-            let deleteProductRouteId = deleteProductRoute.replace('delete_id', this.value)
-            let tr = $(this).parents('tr');
-            $.ajax(deleteProductRouteId, {
-                dataType: 'json',
-                type: 'POST',
-                data: {
-                    productId: this.value,
-                    _method: 'delete',
-                },
-                success: function (response) {
-                    alert(response.message)
-                    tr.remove();
-                }
-            });
-        });
 
         // remove product from cart
         list.on('click', 'button.removeFromCart', function () {
@@ -181,7 +189,6 @@
         });
 
         // Login
-
         $('#login').on('submit', function (e) {
             e.preventDefault();
             $.ajax(loginRoute, {
@@ -203,9 +210,7 @@
             });
         });
 
-
         // register
-
         $('#register').on('submit', function (e) {
             e.preventDefault();
             $.ajax(registerRoute, {
@@ -223,9 +228,7 @@
             });
         });
 
-
         // logout
-
         $('#logout-form').on('submit', function (e) {
             e.preventDefault();
             $.ajax(logoutRoute, {
@@ -233,6 +236,79 @@
                 success: function () {
                     isAuthenticated = false;
                     window.location = '#';
+                    window.onhashchange();
+                },
+                error: function (xhr) {
+                    $.each(xhr.responseJSON.errors, function (key, error) {
+                        alert(error)
+                    });
+                },
+            });
+        });
+
+        //Delete product
+        list.on('click', 'button.deleteProduct', function () {
+            let deleteProductRouteId = deleteProductRoute.replace('delete_id', this.value)
+            let tr = $(this).parents('tr');
+            $.ajax(deleteProductRouteId, {
+                dataType: 'json',
+                type: 'POST',
+                data: {
+                    productId: this.value,
+                    _method: 'delete',
+                },
+                success: function (response) {
+                    alert(response.message)
+                    tr.remove();
+                }
+            });
+        });
+
+        // add new product
+        $('#addProduct').on('submit', function (e) {
+            e.preventDefault();
+            let file = $('input[type=file]')[0].files[0]
+            let myForm = document.getElementById('addProduct');
+            let formData = new FormData(myForm);
+            formData.append('file', file);
+            $.ajax(addProductRoute, {
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function () {
+                    document.getElementById('addProduct').reset();
+                    window.location = '#products';
+                    window.onhashchange();
+                },
+                error: function (xhr) {
+                    $.each(xhr.responseJSON.errors, function (key, error) {
+                        alert(error)
+                    });
+                },
+            });
+        });
+
+        list.on('click', 'button.editProduct', function () {
+            editHash = '#edit-product/' + this.value;
+            window.location = editHash;
+            window.onhashchange();
+        });
+
+        $('#editProduct').on('submit', function (e) {
+            e.preventDefault();
+            let file = $('input[type=file]')[0].files[0]
+            let myForm = document.getElementById('addProduct');
+            let formData = new FormData(myForm);
+            formData.append('file', file);
+            formData.append('_method', 'PUT')
+            $.ajax(addProductRoute, {
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function () {
+                    document.getElementById('editProduct').reset();
+                    window.location = '#products';
                     window.onhashchange();
                 },
                 error: function (xhr) {
@@ -304,9 +380,49 @@
                     });
                     break;
 
-                case '#product':
+                case '#create-product':
                     // Show create product page
                     $('.create-product').show();
+                    break;
+
+                case editHash:
+                    $('.edit-product').show();
+                    let id = editHash.substr(editHash.indexOf('/') + 1)
+                    let editProductRouteId = editProductRoute.replace('edit_id', id)
+                    $.ajax(editProductRouteId, {
+                        dataType: 'json',
+                        data: {
+                            productId: id,
+                        },
+                        success: function (response) {
+                            $('#title').val(response.title);
+                            $('#description').val(response.description);
+                            $('#price').val(response.price);
+                            $('#image').val(response.image);
+                        }
+                    });
+
+                    break;
+
+                case '#orders':
+                    // Show orders page
+                    $.ajax(ordersListRoute, {
+                        dataType: 'json',
+                        success: function (response) {
+                            debugger
+                            $('.orders').show();
+                            $('.orders .list').html(renderAllOrders(response.data));
+                        }
+                    });
+                    break;
+                case '#order':
+                    // Show orders page
+                    $.ajax(ordersListRoute, {
+                        dataType: 'json',
+                        success: function (response) {
+
+                        }
+                    });
                     break;
 
                 default:
@@ -334,191 +450,206 @@
     });
 </script>
 <body>
-<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" style="float:right">
-    <!-- Authentication Links -->
-    <div id="not-auth">
-        <a class="dropdown-item" href="#login">{{ __('Login') }}</a>
-        <a class="dropdown-item" href="#register">{{ __('Register') }}</a>
+<div>
+    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" style="float:right">
+        <!-- Authentication Links -->
+        <div id="not-auth">
+            <a class="dropdown-item" href="#login">{{ __('Login') }}</a>
+            <a class="dropdown-item" href="#register">{{ __('Register') }}</a>
+        </div>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" id="auth">
+            <form id="logout-form" action="" method="POST" class="d-none">
+                <button type="submit">{{ __('Logout') }}</button>
+            </form>
+        </div>
+
     </div>
-    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" id="auth">
-        <form id="logout-form" action="" method="POST" class="d-none">
-            <button type="submit">{{ __('Logout') }}</button>
+    <!-- The login page -->
+    <div class="page login">
+        <form method="POST" action="" id="login">
+            <div class="form-group row">
+                <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+
+                <div class="col-md-6">
+                    <input id="email-login" type="email" class="form-control " name="email"
+                           value="{{ old('email') }}" autocomplete="email" >
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
+
+                <div class="col-md-6">
+                    <input id="password-login" type="password" class="form-control"
+                           name="password" autocomplete="current-password">
+                </div>
+            </div>
+            <div class="form-group row mb-0">
+                <div class="col-md-8 offset-md-4">
+                    <button type="submit">
+                        {{ __('Login') }}
+                    </button>
+                </div>
+            </div>
         </form>
     </div>
 
-</div>
-<!-- The login page -->
-<div class="page login">
-    <form method="POST" action="" id="login">
-        <div class="form-group row">
-            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+    <!-- The register page -->
 
-            <div class="col-md-6">
-                <input id="email-login" type="email" class="form-control " name="email"
-                       value="{{ old('email') }}" autocomplete="email" >
+    <div class="page register">
+        <form method="POST" action="" id="register">
+            <div class="form-group row">
+                <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
+
+                <div class="col-md-6">
+                    <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
 
-            <div class="col-md-6">
-                <input id="password-login" type="password" class="form-control"
-                       name="password" autocomplete="current-password">
+            <div class="form-group row">
+                <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+
+                <div class="col-md-6">
+                    <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autocomplete="email">
+                </div>
             </div>
-        </div>
-        <div class="form-group row mb-0">
-            <div class="col-md-8 offset-md-4">
-                <button type="submit">
-                    {{ __('Login') }}
-                </button>
+
+            <div class="form-group row">
+                <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
+                <div class="col-md-6">
+                    <input id="password" type="password" class="form-control" name="password" required autocomplete="new-password">
+                </div>
             </div>
-        </div>
-    </form>
-</div>
 
-<!-- The register page -->
-
-<div class="page register">
-    <form method="POST" action="" id="register">
-        <div class="form-group row">
-            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
-
-            <div class="col-md-6">
-                <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+            <div class="form-group row">
+                <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}</label>
+                <div class="col-md-6">
+                    <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+                </div>
             </div>
-        </div>
 
-        <div class="form-group row">
-            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
-
-            <div class="col-md-6">
-                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autocomplete="email">
+            <div class="form-group row mb-0">
+                <div class="col-md-6 offset-md-4">
+                    <button type="submit" class="btn btn-primary">
+                        {{ __('Register') }}
+                    </button>
+                </div>
             </div>
-        </div>
+        </form>
+    </div>
 
-        <div class="form-group row">
-            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
-            <div class="col-md-6">
-                <input id="password" type="password" class="form-control" name="password" required autocomplete="new-password">
-            </div>
-        </div>
+    <!-- The index page -->
+    <div class="page index">
+        <!-- The index element where the products list is rendered -->
+        <table class="list"></table>
 
-        <div class="form-group row">
-            <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}</label>
-            <div class="col-md-6">
-                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
-            </div>
-        </div>
+        <!-- A link to go to the cart by changing the hash -->
+        <a href="#cart" class="button">{{ __('Go to cart') }}</a>
+    </div>
 
-        <div class="form-group row mb-0">
-            <div class="col-md-6 offset-md-4">
-                <button type="submit" class="btn btn-primary">
-                    {{ __('Register') }}
-                </button>
-            </div>
-        </div>
-    </form>
-</div>
-
-<!-- The index page -->
-<div class="page index">
-    <!-- The index element where the products list is rendered -->
+    <!-- The cart page -->
+    <div class="page cart">
+    <!-- The cart element where the products list is rendered -->
     <table class="list"></table>
+    <!-- The form element where the customer fill contact details for order-->
+        <div class="col-md-3">
+            <form action="" method="post" id="checkout">
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="name"
+                           placeholder="{{ __('Name') }}" value="{{ old('name') }}">
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control "
+                           name="contact_details" placeholder="{{ __('Contact details') }}"
+                           value="{{ old('contact_details') }}">
+                </div>
+                <div class="mb-3">
+                    <textarea name="comments" class="form-control" rows="3" placeholder="{{ __('Comments') }}"></textarea>
+                </div>
+                <div>
+                    <button type="submit">{{ __('Checkout') }}</button>
+                </div>
+            </form>
+            <a href="#" class="button">{{ __('Go to index') }}</a>
+        </div>
+    </div>
+    <!-- A link to go to the index by changing the hash -->
 
-    <!-- A link to go to the cart by changing the hash -->
-    <a href="#cart" class="button">{{ __('Go to cart') }}</a>
-</div>
+    <!-- The products page -->
+    <div class="page products">
+        <a href="#orders" class="button">{{ __('Show orders') }}</a>
+        <!-- The products element where the products list is rendered -->
+        <table class="list">
 
-<!-- The cart page -->
-<div class="page cart">
-<!-- The cart element where the products list is rendered -->
-<table class="list"></table>
-<!-- The form element where the customer fill contact details for order-->
-    <div class="col-md-3">
-        <form action="" method="post" id="checkout">
+        </table>
+        <!-- A link to go to the product by changing the hash -->
+        <a href="#create-product" class="button">{{ __('Add new product') }}</a>
+    </div>
+
+    <!-- The product page -->
+    <div class="page create-product">
+        <form action="" method="post" enctype="multipart/form-data" id="addProduct">
             <div class="mb-3">
-                <input type="text" class="form-control" name="name"
-                       placeholder="{{ __('Name') }}" value="{{ old('name') }}">
+                <input type="text" class="form-control" name="title"
+                       placeholder="{{ __('Title') }}" value="{{ old('title') }}">
             </div>
             <div class="mb-3">
-                <input type="text" class="form-control "
-                       name="contact_details" placeholder="{{ __('Contact details') }}"
-                       value="{{ old('contact_details') }}">
+                <input type="text" class="form-control" name="description"
+                       placeholder="{{ __('Description') }}" value="{{ old('description') }}">
             </div>
             <div class="mb-3">
-                <textarea name="comments" class="form-control" rows="3" placeholder="{{ __('Comments') }}"></textarea>
+                <input type="number" class="form-control" name="price"
+                       placeholder="{{ __('Price') }}" value="{{ old('price') }}">
+            </div>
+            <div class="mb-3">
+                <input type="file" class="form-control" name="image"
+                       placeholder="{{ __('image') }}">
             </div>
             <div>
-                <button type="submit">{{ __('Checkout') }}</button>
+                <button type="submit">{{ __('Save') }}</button>
             </div>
         </form>
-        <a href="#" class="button">{{ __('Go to index') }}</a>
+        <!-- A link to go to the product by changing the hash -->
+        <a href="#products" class="button">{{ __('Products list') }}</a>
     </div>
-</div>
-<!-- A link to go to the index by changing the hash -->
 
-<!-- The products page -->
-<div class="page products">
-    <!-- The products element where the products list is rendered -->
-    <table class="list">
+    <!-- Edit product page -->
+    <div class="page edit-product">
+            <form action="" method="" enctype="multipart/form-data" id="editProduct">
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="title" id="title"
+                           placeholder="{{ __('Title') }}" value="">
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="description" id="description"
+                           placeholder="{{ __('Description') }}" value="">
+                </div>
+                <div class="mb-3">
+                    <input type="number" class="form-control" name="price" id="price"
+                           placeholder="{{ __('Price') }}" value="">
+                </div>
+                <div class="mb-3">
+                    <input type="file" class="form-control" name="image" id="image"
+                           placeholder="">
+                </div>
+                <div>
+                    <button type="submit">{{ __('Update') }}</button>
+                </div>
+            </form>
+        <a href="#products" class="button">{{ __('Products list') }}</a>
+    </div>
 
-    </table>
-    <!-- A link to go to the product by changing the hash -->
-    <a href="#product" class="button">{{ __('Add new product') }}</a>
-</div>
-
-<!-- The product page -->
-<div class="page create-product">
-    <form action="" method="post" enctype="multipart/form-data" id="addProduct">
-        <div class="mb-3">
-            <input type="text" class="form-control" name="title"
-                   placeholder="{{ __('Title') }}" value="{{ old('title') }}">
-        </div>
-        <div class="mb-3">
-            <input type="text" class="form-control" name="description"
-                   placeholder="{{ __('Description') }}" value="{{ old('description') }}">
-        </div>
-        <div class="mb-3">
-            <input type="number" class="form-control" name="price"
-                   placeholder="{{ __('Price') }}" value="{{ old('price') }}">
-        </div>
-        <div class="mb-3">
-            <input type="file" class="form-control" name="image"
-                   placeholder="{{ __('image') }}">
-        </div>
-        <div>
-            <button type="submit">{{ __('Save') }}</button>
-        </div>
-    </form>
-    <!-- A link to go to the product by changing the hash -->
-    <a href="#products" class="button">{{ __('Products list') }}</a>
-</div>
-
-{{--<!-- Edit product page -->--}}
-{{--<div class="page edit-product">--}}
-{{--        <form action="" method="post" enctype="multipart/form-data">--}}
-{{--            <div class="mb-3">--}}
-{{--                <input type="text" class="form-control" name="title"--}}
-{{--                       placeholder="{{ __('Title') }}" value="{{ $product->title }}">--}}
-{{--            </div>--}}
-{{--            <div class="mb-3">--}}
-{{--                <input type="text" class="form-control" name="description"--}}
-{{--                       placeholder="{{ __('Description') }}" value="{{ $product->description }}">--}}
-{{--            </div>--}}
-{{--            <div class="mb-3">--}}
-{{--                <input type="number" class="form-control" name="price"--}}
-{{--                       placeholder="{{ __('Price') }}" value="{{ $product->price }}">--}}
-{{--            </div>--}}
-{{--            <div class="mb-3">--}}
-{{--                <input type="file" class="form-control" name="image"--}}
-{{--                       placeholder="{{ __('image') }}">--}}
-{{--            </div>--}}
-{{--            <div>--}}
-{{--                <button type="submit">{{ __('Save') }}</button>--}}
-{{--            </div>--}}
-{{--        </form>--}}
-{{--</div>--}}
-
+    <!-- The orders page -->
+    <div class="page orders">
+        <!-- The page where the orders list is rendered -->
+        <table class="list"></table>
+        <a href="#products" class="button">{{ __('Products list') }}</a>
+    </div>
+    <!-- The order page -->
+    <div class="page order">
+        <!-- The page where the order  is rendered -->
+        <table class="list"></table>
+        <a href="#orders" class="button">{{ __('Orders list') }}</a>
+    </div>
 </div>
 </body>
 </html>

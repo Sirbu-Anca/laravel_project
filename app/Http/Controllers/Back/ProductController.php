@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -46,7 +47,7 @@ class ProductController extends Controller
         $this->saveProductFile($request, $product);
 
         if ($request->ajax()) {
-            return response()->json($product, ['message' => __('New product successfully added!')]);
+            return response()->json($product);
         } else {
             return redirect()
                 ->route('backend.products.index')
@@ -57,13 +58,18 @@ class ProductController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
      * @param Product $product
-     * @return Application|Factory|View
+     * @param Request $request
      */
-    public function edit(Product $product)
+    public function edit(Product $product, Request $request)
     {
-        return view('backend.products.edit', compact('product'));
+        $product = Product::query()->findOrFail($product->id);
+
+        if ($request->ajax()) {
+            return response()->json($product);
+        } else {
+            return view('backend.products.edit', compact('product'));
+        }
     }
 
     /**
@@ -77,9 +83,13 @@ class ProductController extends Controller
         $product->update($this->validateProduct($request));
         $this->saveProductFile($request, $product);
 
-        return redirect()
-            ->route('backend.products.index')
-            ->with('success', __('Product updated successfully.'));
+        if ($request->ajax()) {
+            return response()->json($product);
+        } else {
+            return redirect()
+                ->route('backend.products.index')
+                ->with('success', __('Product updated successfully.'));
+        }
     }
 
     /**
@@ -122,13 +132,11 @@ class ProductController extends Controller
         }
 
         if ($request->ajax()) {
-            return response()->json(['message' => $product->title . __(' delete successfully!')]);
+            return response()->json(['message' => $product->title . __(' deleted successfully!')]);
         } else {
             return redirect()
-                ->route("backend.products.index");
+                ->route("backend.products.index")
+                ->with('success', __('Product deleted.'));
         }
-//        return redirect()
-//            ->route('backend.products.index')
-//            ->with('success', __('Product deleted.'));
     }
 }
