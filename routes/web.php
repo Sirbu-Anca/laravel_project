@@ -47,6 +47,7 @@ Route::prefix('cart')
     });
 
 Route::prefix('backend')
+    ->middleware('auth')
     ->name('backend.')
     ->group(function () {
         Route::resource('products', BackProductController::class);

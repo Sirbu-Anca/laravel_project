@@ -23,6 +23,8 @@
         let allProductsRoute = '{{ route('backend.products.index') }}';
         let deleteProductRoute = '{{ route('backend.products.destroy', 'delete_id') }}';
         let addProductRoute = '{{ route('backend.products.store') }}'
+        let list = $('.list');
+        let isAuthenticated = {{ auth()->check() ? 1 : 0 }};
 
         $.ajaxSetup({
             headers: {
@@ -105,8 +107,9 @@
         }
 
 
+
         // Add to cart
-        $('.list').on('click', 'button.addToCart', function () {
+        list.on('click', 'button.addToCart', function () {
             $.ajax(addToCartRoute, {
                 dataType: 'json',
                 type: 'POST',
@@ -121,10 +124,10 @@
         })
 
         //Delete product
-        $('.list').on('click', 'button.deleteProduct', function () {
-            deleteProductRoute = deleteProductRoute.replace('delete_id', this.value)
+        list.on('click', 'button.deleteProduct', function () {
+            let deleteProductRouteId = deleteProductRoute.replace('delete_id', this.value)
             let tr = $(this).parents('tr');
-            $.ajax(deleteProductRoute, {
+            $.ajax(deleteProductRouteId, {
                 dataType: 'json',
                 type: 'POST',
                 data: {
@@ -138,37 +141,11 @@
             });
         });
 
-        // add new product
-        $(function () {
-            $('#addProduct').on('submit', function (e) {
-                e.preventDefault();
-                let data = new FormData();
-                debugger
-                $.ajax(addProductRoute, {
-                    type: 'POST',
-                    data: new FormData(this),
-                    dataType:'JSON',
-                    success: function (data) {
-                        console.log(data)
-                        debugger
-                        // if (data !== 0) {
-                        //     window.location = '#products';
-                        // }
-                    },
-                    error: function (xhr) {
-                        $.each(xhr.responseJSON.errors, function (key, error) {
-                            alert(error)
-                        });
-                    },
-                });
-            });
-        });
-
         // remove product from cart
-        $('.list').on('click', 'button.removeFromCart', function () {
-            removeFromCartRoute = removeFromCartRoute.replace('remove_id', this.value)
+        list.on('click', 'button.removeFromCart', function () {
+            let removeFromCartRouteId = removeFromCartRoute.replace('remove_id', this.value)
             let tr = $(this).parents('tr');
-            $.ajax(removeFromCartRoute, {
+            $.ajax(removeFromCartRouteId, {
                 dataType: 'json',
                 type: 'POST',
                 data: {
@@ -178,102 +155,94 @@
                 success: function (response) {
                     alert(response.message)
                     tr.remove();
+                    window.onhashchange();
                 }
             });
         });
 
         // Send order
-        $(function () {
-            $('#checkout').on('submit', function (e) {
-                e.preventDefault();
-                $.ajax(sendOrderRoute, {
-                    type: 'POST',
-                    data: {
-                        name: this.name.value,
-                        contact_details: this.contact_details.value,
-                        comments: this.comments.value,
-                    },
-                    success: function () {
-                        document.getElementById('checkout').reset();
-                        window.location = '#';
-                        alert('Order sent!')
-                    },
-                    error: function (xhr) {
-                        $.each(xhr.responseJSON.errors, function (key, error) {
-                            alert(error)
-                        });
-                    },
-                });
+        $('#checkout').on('submit', function (e) {
+            e.preventDefault();
+            $.ajax(sendOrderRoute, {
+                type: 'POST',
+                data: $(this).serializeArray(),
+                success: function () {
+                    document.getElementById('checkout').reset();
+                    window.location = '#';
+                    window.onhashchange();
+                    alert('Order sent!')
+                },
+                error: function (xhr) {
+                    $.each(xhr.responseJSON.errors, function (key, error) {
+                        alert(error)
+                    });
+                },
             });
         });
 
         // Login
-        $(function () {
-            $('#login').on('submit', function (e) {
-                e.preventDefault();
-                $.ajax(loginRoute, {
-                    type: 'POST',
-                    data: {
-                        email: this.email.value,
-                        password: this.password.value,
-                    },
-                    success: function (data) {
-                        if (data !== 0) {
-                            window.location = '#products';
-                        }
-                    },
-                    error: function (xhr) {
-                        $.each(xhr.responseJSON.errors, function (key, error) {
-                            alert(error)
-                        });
-                    }
 
-                });
+        $('#login').on('submit', function (e) {
+            e.preventDefault();
+            $.ajax(loginRoute, {
+                type: 'POST',
+                data: $(this).serializeArray(),
+                success: function (data, textStatus, jqXHR) {
+                    if (jqXHR.status === 200) {
+                        isAuthenticated = true;
+                        window.location = '#products';
+                        window.onhashchange();
+                    }
+                },
+                error: function (xhr) {
+                    $.each(xhr.responseJSON.errors, function (key, error) {
+                        alert(error)
+                    });
+                }
+
             });
         });
+
 
         // register
-        $(function () {
-            $('#register').on('submit', function (e) {
-                e.preventDefault();
-                // debugger
-                $.ajax(registerRoute, {
-                    type: 'POST',
-                    data: {
-                        name: this.name.value,
-                        email: this.email.value,
-                        password: this.password.value,
-                        password_confirmation: this.password_confirmation.value,
-                    },
-                    success: function () {
-                        window.location = '#products';
-                    },
-                    error: function (xhr) {
-                        $.each(xhr.responseJSON.errors, function (key, error) {
-                            alert(error)
-                        });
-                    },
-                });
+
+        $('#register').on('submit', function (e) {
+            e.preventDefault();
+            $.ajax(registerRoute, {
+                type: 'POST',
+                data: $(this).serializeArray(),
+                success: function () {
+                    window.location = '#products';
+                    window.onhashchange();
+                },
+                error: function (xhr) {
+                    $.each(xhr.responseJSON.errors, function (key, error) {
+                        alert(error)
+                    });
+                },
             });
         });
 
+
         // logout
-        $(function () {
-            $('#logout-form').on('submit', function (e) {
-                e.preventDefault();
-                $.ajax(logoutRoute, {
-                    type: 'POST',
-                    success: function () {
-                        window.location = '#';
-                    },
-                    error: function (xhr) {
-                        $.each(xhr.responseJSON.errors, function (key, error) {
-                            alert(error)
-                        });
-                    },
-                });
+
+        $('#logout-form').on('submit', function (e) {
+            e.preventDefault();
+            $.ajax(logoutRoute, {
+                type: 'POST',
+                success: function () {
+                    isAuthenticated = false;
+                    window.location = '#';
+                    window.onhashchange();
+                },
+                error: function (xhr) {
+                    $.each(xhr.responseJSON.errors, function (key, error) {
+                        alert(error)
+                    });
+                },
             });
         });
+
 
         /**
          * URL hash change handler
@@ -281,6 +250,14 @@
         window.onhashchange = function () {
             // First hide all the pages
             $('.page').hide();
+
+            if (isAuthenticated) {
+                $('#not-auth').hide()
+                $('#auth').show()
+            } else {
+                $('#not-auth').show()
+                $('#auth').hide()
+            }
 
             switch (window.location.hash) {
                 case '#cart':
@@ -295,6 +272,7 @@
                                 $('.cart .list').html(renderCartList(response));
                             } else {
                                 window.location = '#';
+                                window.onhashchange();
                                 alert('Your cart is empty!');
                             }
                         }
@@ -344,6 +322,7 @@
                                 $('.index .list').html(renderList(response.data));
                             } else {
                                 window.location = '#cart';
+                                window.onhashchange();
                                 alert('All products are in your cart!');
                             }
                         }
@@ -357,18 +336,16 @@
 <body>
 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" style="float:right">
     <!-- Authentication Links -->
-    @guest
+    <div id="not-auth">
         <a class="dropdown-item" href="#login">{{ __('Login') }}</a>
-        @if (Route::has('register'))
-            <a class="dropdown-item" href="#register">{{ __('Register') }}</a>
-        @endif
-    @else
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-            <form id="logout-form" action="" method="POST" class="d-none">
-                <button type="submit">{{ __('Logout') }}</button>
-            </form>
-        </div>
-    @endguest
+        <a class="dropdown-item" href="#register">{{ __('Register') }}</a>
+    </div>
+    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" id="auth">
+        <form id="logout-form" action="" method="POST" class="d-none">
+            <button type="submit">{{ __('Logout') }}</button>
+        </form>
+    </div>
+
 </div>
 <!-- The login page -->
 <div class="page login">
