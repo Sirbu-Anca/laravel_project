@@ -16,13 +16,18 @@ class OrderController extends Controller
      * Display a listing of the resource.
      *
      */
-    public function index(): Factory|View|Application
+    public function index()
     {
         $orders = OrderProduct::query()
             ->select('order_id', 'price', DB::raw('SUM(price) as total_sum'))
             ->groupBy('order_id')
-            ->paginate(5);
-        return view('backend.orders.index', compact('orders'));
+            ->paginate(10);
+
+        if (request()->ajax()) {
+            return response()->json($orders);
+        } else {
+            return view('backend.orders.index', compact('orders'));
+        }
     }
 
     /**
@@ -30,7 +35,7 @@ class OrderController extends Controller
      * @param Order $order
      * @return Application|Factory|View
      */
-    public function show(Order $order): Factory|View|Application
+    public function show(Order $order)
     {
         return view('backend.orders.show', compact('order'));
     }
