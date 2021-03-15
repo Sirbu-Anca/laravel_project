@@ -102,7 +102,7 @@ class ProductController extends Controller
             'title' => 'required',
             'description' => 'required',
             'price' => 'required',
-            'image' => 'image|mimes:jpg, jpeg, png, bmp, gif, svg',
+            'image' => 'image|mimes:jpg,jpeg,png,bmp,gif,svg',
         ]);
     }
 

@@ -132,6 +132,24 @@
             });
             return html;
         }
+        function renderOrder(order) {
+            html = [
+                '<tr>',
+                '<th>Name</th>',
+                '<th>Address</th>', ,
+                '<th>Comments</th>',
+                '</tr>'
+            ].join('');
+            html += [
+                '<tr>',
+                '<td>' + order.name + '</td>',
+                '<td>' + order.address + '</td>',
+                '<td>' + order.comments + '</td>',
+                '</td>',
+                '</tr>'
+            ].join('');
+            return html;
+        }
 
 
         // Add to cart
@@ -302,7 +320,7 @@
             let myForm = document.getElementById('updateProduct');
             let formData = new FormData(myForm);
             $.ajax(updateProductRouteId, {
-                type: 'PUT',
+                type: 'POST',
                 data: formData,
                 cache: false,
                 contentType: false,
@@ -419,11 +437,15 @@
                     });
                     break;
                 case '#order':
-                    // Show orders page
-                    $.ajax(ordersListRoute, {
+                    // Show order page
+                    let  orderRouteId = orderRoute.replace('order_id', this.value)
+                    debugger
+                    $.ajax(orderRouteId, {
                         dataType: 'json',
                         success: function (response) {
-
+                            debugger
+                            $('.order').show();
+                            $('.orders .list').html(renderOrder(response.data));
                         }
                     });
                     break;
@@ -590,7 +612,7 @@
 
     <!-- The product page -->
     <div class="page create-product">
-        <form action="" method="post" enctype="multipart/form-data" id="addProduct">
+        <form action="" method="POST" enctype="multipart/form-data" id="addProduct">
             <div class="mb-3">
                 <input type="text" class="form-control" name="title"
                        placeholder="{{ __('Title') }}" value="{{ old('title') }}">
@@ -617,7 +639,8 @@
 
     <!-- Edit product page -->
     <div class="page edit-product">
-            <form action="" method="" enctype="multipart/form-data" id="updateProduct">
+            <form action="" method="POST" enctype="multipart/form-data" id="updateProduct">
+                @method('PUT')
                 <div class="mb-3">
                     <input type="text" class="form-control" name="title" id="title"
                            placeholder="{{ __('Title') }}" value="">
