@@ -34,10 +34,16 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      * @param Order $order
-     * @return Application|Factory|View
      */
     public function show(Order $order)
     {
+        $order = OrderProduct::query()
+            ->select('products.title', 'products.description', 'order_product.price', 'orders.id')
+            ->join('products', 'order_product.product_id', '=','products.id')
+            ->join('orders', 'order_product.order_id', '=', 'orders.id')
+            ->groupBy("order_id")
+            ->paginate(10);
+
         if (request()->ajax()) {
             return response()->json($order);
         } else {

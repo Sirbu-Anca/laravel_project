@@ -26,8 +26,11 @@
         let editProductRoute = '{{ route('backend.products.edit', 'edit_id') }}';
         let editHash = undefined;
         let updateProductRoute = '{{ route('backend.products.update', 'update_id') }}';
+
         let ordersListRoute = '{{ route('backend.orders.index') }}';
         let orderRoute = '{{ route('backend.orders.show', 'order_id') }}'
+        let orderHash = undefined;
+
         let list = $('.list');
         let isAuthenticated = {{ auth()->check() ? 1 : 0 }};
 
@@ -135,18 +138,21 @@
         function renderOrder(order) {
             html = [
                 '<tr>',
-                '<th>Name</th>',
-                '<th>Address</th>', ,
-                '<th>Comments</th>',
-                '</tr>'
-            ].join('');
-            html += [
+                '<td>Name: ' + order.name + '</td>',
                 '<tr>',
-                '<td>' + order.name + '</td>',
-                '<td>' + order.address + '</td>',
-                '<td>' + order.comments + '</td>',
-                '</td>',
-                '</tr>'
+                '<td>Adsress: ' + order.contact_details + '</td>',
+                '</tr>',
+                '<td>Comments: ' + order.comments + '</td>',
+                '</tr>',
+            ].join('');
+            html = [
+                '<tr>',
+                '<td>Name: ' + order.name + '</td>',
+                '<tr>',
+                '<td>Adsress: ' + order.contact_details + '</td>',
+                '</tr>',
+                '<td>Comments: ' + order.comments + '</td>',
+                '</tr>',
             ].join('');
             return html;
         }
@@ -313,6 +319,12 @@
             window.onhashchange();
         });
 
+        list.on('click', 'button.showOrder', function () {
+            orderHash = '#order/' + this.value;
+            window.location = orderHash;
+            window.onhashchange();
+        });
+
         $('#updateProduct').on('submit', function (e) {
             e.preventDefault();
             let update_id = window.location.hash.substr(window.location.hash.indexOf('/') + 1)
@@ -355,8 +367,13 @@
             }
 
             let hash = window.location.hash;
+
             if (hash.search('#edit-product') !== -1) {
                 hash = ('#edit-product');
+            }
+
+            if (hash.search('#order/') !== -1) {
+                hash = ('#order/');
             }
 
             switch (hash) {
@@ -428,24 +445,28 @@
 
                 case '#orders':
                     // Show orders page
+                    $('.orders').show();
                     $.ajax(ordersListRoute, {
                         dataType: 'json',
                         success: function (response) {
-                            $('.orders').show();
                             $('.orders .list').html(renderAllOrders(response.data));
                         }
                     });
                     break;
-                case '#order':
+
+                case '#order/':
                     // Show order page
-                    let  orderRouteId = orderRoute.replace('order_id', this.value)
-                    debugger
+                    let order_id = window.location.hash.substr(window.location.hash.indexOf('/') + 1)
+                    $('.order').show();
+                    let  orderRouteId = orderRoute.replace('order_id', order_id)
                     $.ajax(orderRouteId, {
                         dataType: 'json',
+                        data: {
+                            orderId: order_id,
+                        },
                         success: function (response) {
                             debugger
-                            $('.order').show();
-                            $('.orders .list').html(renderOrder(response.data));
+                            $('.order .list').html(renderOrder(response));
                         }
                     });
                     break;
