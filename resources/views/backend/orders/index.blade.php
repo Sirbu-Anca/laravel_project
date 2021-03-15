@@ -16,12 +16,12 @@
                 @foreach ($orders as $order)
                     <tr>
                         <td>
-                            {{ $order->order_id }}
+                            {{ $order->id }}
                         </td>
                         <td>
                             {{ $order->total_sum }} eur
                         </td>
-                        <td><a href="{{ route('backend.orders.show', $order->order_id) }}">{{ __('Show') }}</a></td>
+                        <td><a href="{{ route('backend.orders.show', $order->id) }}">{{ __('Show') }}</a></td>
                     </tr>
                 @endforeach
             </table>

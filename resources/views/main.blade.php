@@ -24,7 +24,7 @@
         let deleteProductRoute = '{{ route('backend.products.destroy', 'delete_id') }}';
         let addProductRoute = '{{ route('backend.products.store') }}'
         let editProductRoute = '{{ route('backend.products.edit', 'edit_id') }}';
-        let editHash = '';
+        let editHash = undefined;
         let updateProductRoute = '{{ route('backend.products.update', 'update_id') }}';
         let ordersListRoute = '{{ route('backend.orders.index') }}';
         let orderRoute = '{{ route('backend.orders.show', 'order_id') }}'
@@ -123,7 +123,7 @@
             $.each(orders, function (key, order) {
                 html += [
                     '<tr>',
-                    '<td>' + order.order_id + '</td>',
+                    '<td>' + order.id + '</td>',
                     '<td>' + order.total_sum + '</td>',
                     '<td><button class="showOrder" value="' + order.id + '">Show</button></td>',
                     '</td>',
@@ -295,19 +295,20 @@
             window.onhashchange();
         });
 
-        $('#editProduct').on('submit', function (e) {
+        $('#updateProduct').on('submit', function (e) {
             e.preventDefault();
-            let file = $('input[type=file]')[0].files[0]
-            let myForm = document.getElementById('addProduct');
+            let update_id = window.location.hash.substr(window.location.hash.indexOf('/') + 1)
+            let updateProductRouteId = updateProductRoute.replace('update_id', update_id)
+            let myForm = document.getElementById('updateProduct');
             let formData = new FormData(myForm);
-            formData.append('file', file);
-            formData.append('_method', 'PUT')
-            $.ajax(addProductRoute, {
+            $.ajax(updateProductRouteId, {
+                type: 'PUT',
                 data: formData,
+                cache: false,
                 contentType: false,
                 processData: false,
                 success: function () {
-                    document.getElementById('editProduct').reset();
+                    document.getElementById('updateProduct').reset();
                     window.location = '#products';
                     window.onhashchange();
                 },
@@ -335,7 +336,12 @@
                 $('#auth').hide()
             }
 
-            switch (window.location.hash) {
+            let hash = window.location.hash;
+            if (hash.search('#edit-product') !== -1) {
+                hash = ('#edit-product');
+            }
+
+            switch (hash) {
                 case '#cart':
                     // Show the cart page
                     // Load the cart products from the server
@@ -385,9 +391,9 @@
                     $('.create-product').show();
                     break;
 
-                case editHash:
+                case '#edit-product':
+                    let id = window.location.hash.substr(window.location.hash.indexOf('/') + 1)
                     $('.edit-product').show();
-                    let id = editHash.substr(editHash.indexOf('/') + 1)
                     let editProductRouteId = editProductRoute.replace('edit_id', id)
                     $.ajax(editProductRouteId, {
                         dataType: 'json',
@@ -398,10 +404,8 @@
                             $('#title').val(response.title);
                             $('#description').val(response.description);
                             $('#price').val(response.price);
-                            $('#image').val(response.image);
                         }
                     });
-
                     break;
 
                 case '#orders':
@@ -409,7 +413,6 @@
                     $.ajax(ordersListRoute, {
                         dataType: 'json',
                         success: function (response) {
-                            debugger
                             $('.orders').show();
                             $('.orders .list').html(renderAllOrders(response.data));
                         }
@@ -614,7 +617,7 @@
 
     <!-- Edit product page -->
     <div class="page edit-product">
-            <form action="" method="" enctype="multipart/form-data" id="editProduct">
+            <form action="" method="" enctype="multipart/form-data" id="updateProduct">
                 <div class="mb-3">
                     <input type="text" class="form-control" name="title" id="title"
                            placeholder="{{ __('Title') }}" value="">

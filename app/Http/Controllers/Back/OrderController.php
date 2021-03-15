@@ -18,8 +18,9 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = OrderProduct::query()
-            ->select('order_id', 'price', DB::raw('SUM(price) as total_sum'))
+        $orders = Order::query()
+            ->select('orders.id', 'order_product.price', DB::raw('SUM(price) as total_sum'))
+            ->join('order_product', 'orders.id', '=', 'order_product.order_id')
             ->groupBy('order_id')
             ->paginate(10);
 
@@ -37,7 +38,12 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        return view('backend.orders.show', compact('order'));
+        if (request()->ajax()) {
+            return response()->json($order);
+        } else {
+            return view('backend.orders.show', compact('order'));
+        }
+
     }
 
 }
