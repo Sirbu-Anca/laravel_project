@@ -1,4 +1,3 @@
-
 <html>
 <head>
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -40,6 +39,7 @@
             },
         });
 
+        // Display products
         function renderList(products) {
             html = [
                 '<tr>',
@@ -65,6 +65,8 @@
 
             return html;
         }
+
+        // Display all products
         function renderAllProducts(products) {
             html = [
                 '<tr>',
@@ -91,6 +93,7 @@
             return html;
         }
 
+        //Display cart products
         function renderCartList(products) {
             html = [
                 '<tr>',
@@ -114,6 +117,7 @@
             return html;
         }
 
+        // Display all orders
         function renderAllOrders(orders) {
             html = [
                 '<tr>',
@@ -135,7 +139,9 @@
             });
             return html;
         }
-        function renderOrder(order) {
+
+        // Display order details
+        function renderOrder(order, products) {
             html = [
                 '<tr>',
                 '<td>Name: ' + order.name + '</td>',
@@ -145,20 +151,22 @@
                 '<td>Comments: ' + order.comments + '</td>',
                 '</tr>',
             ].join('');
-            html = [
-                '<tr>',
-                '<td>Name: ' + order.name + '</td>',
-                '<tr>',
-                '<td>Adsress: ' + order.contact_details + '</td>',
-                '</tr>',
-                '<td>Comments: ' + order.comments + '</td>',
-                '</tr>',
-            ].join('');
+
+            $.each(products, function (key, product) {
+                html += [
+                    '<tr>',
+                    '<td>',
+                    '<div>' + product.title + '</div>',
+                    '<div>' + product.description + '</div>',
+                    '<div>' + product.price + '</div>',
+                    '</td>',
+                    '</tr>'
+                ].join('');
+            });
             return html;
         }
 
-
-        // Add to cart
+        // Add product to cart
         list.on('click', 'button.addToCart', function () {
             $.ajax(addToCartRoute, {
                 dataType: 'json',
@@ -173,7 +181,7 @@
             });
         })
 
-        // remove product from cart
+        // Remove product from cart
         list.on('click', 'button.removeFromCart', function () {
             let removeFromCartRouteId = removeFromCartRoute.replace('remove_id', this.value)
             let tr = $(this).parents('tr');
@@ -234,7 +242,7 @@
             });
         });
 
-        // register
+        // Register
         $('#register').on('submit', function (e) {
             e.preventDefault();
             $.ajax(registerRoute, {
@@ -252,7 +260,7 @@
             });
         });
 
-        // logout
+        // Logout
         $('#logout-form').on('submit', function (e) {
             e.preventDefault();
             $.ajax(logoutRoute, {
@@ -288,7 +296,7 @@
             });
         });
 
-        // add new product
+        // Add new product
         $('#addProduct').on('submit', function (e) {
             e.preventDefault();
             let file = $('input[type=file]')[0].files[0]
@@ -458,15 +466,14 @@
                     // Show order page
                     let order_id = window.location.hash.substr(window.location.hash.indexOf('/') + 1)
                     $('.order').show();
-                    let  orderRouteId = orderRoute.replace('order_id', order_id)
+                    let orderRouteId = orderRoute.replace('order_id', order_id)
                     $.ajax(orderRouteId, {
                         dataType: 'json',
                         data: {
                             orderId: order_id,
                         },
                         success: function (response) {
-                            debugger
-                            $('.order .list').html(renderOrder(response));
+                            $('.order .list').html(renderOrder(response[0], response[1]['data']));
                         }
                     });
                     break;
@@ -510,7 +517,7 @@
         </div>
 
     </div>
-    <!-- The login page -->
+    <!-- Login page -->
     <div class="page login">
         <form method="POST" action="" id="login">
             <div class="form-group row">
@@ -518,7 +525,7 @@
 
                 <div class="col-md-6">
                     <input id="email-login" type="email" class="form-control " name="email"
-                           value="{{ old('email') }}" autocomplete="email" >
+                           value="{{ old('email') }}" autocomplete="email">
                 </div>
             </div>
             <div class="form-group row">
@@ -539,15 +546,15 @@
         </form>
     </div>
 
-    <!-- The register page -->
-
+    <!-- Register page -->
     <div class="page register">
         <form method="POST" action="" id="register">
             <div class="form-group row">
                 <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
 
                 <div class="col-md-6">
-                    <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+                    <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" required
+                           autocomplete="name" autofocus>
                 </div>
             </div>
 
@@ -555,21 +562,25 @@
                 <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
                 <div class="col-md-6">
-                    <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autocomplete="email">
+                    <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required
+                           autocomplete="email">
                 </div>
             </div>
 
             <div class="form-group row">
                 <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
                 <div class="col-md-6">
-                    <input id="password" type="password" class="form-control" name="password" required autocomplete="new-password">
+                    <input id="password" type="password" class="form-control" name="password" required
+                           autocomplete="new-password">
                 </div>
             </div>
 
             <div class="form-group row">
-                <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}</label>
+                <label for="password-confirm"
+                       class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}</label>
                 <div class="col-md-6">
-                    <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+                    <input id="password-confirm" type="password" class="form-control" name="password_confirmation"
+                           required autocomplete="new-password">
                 </div>
             </div>
 
@@ -594,9 +605,9 @@
 
     <!-- The cart page -->
     <div class="page cart">
-    <!-- The cart element where the products list is rendered -->
-    <table class="list"></table>
-    <!-- The form element where the customer fill contact details for order-->
+        <!-- The cart element where the products list is rendered -->
+        <table class="list"></table>
+        <!-- The form element where the customer fill contact details for order-->
         <div class="col-md-3">
             <form action="" method="post" id="checkout">
                 <div class="mb-3">
@@ -609,7 +620,8 @@
                            value="{{ old('contact_details') }}">
                 </div>
                 <div class="mb-3">
-                    <textarea name="comments" class="form-control" rows="3" placeholder="{{ __('Comments') }}"></textarea>
+                    <textarea name="comments" class="form-control" rows="3"
+                              placeholder="{{ __('Comments') }}"></textarea>
                 </div>
                 <div>
                     <button type="submit">{{ __('Checkout') }}</button>
@@ -660,28 +672,28 @@
 
     <!-- Edit product page -->
     <div class="page edit-product">
-            <form action="" method="POST" enctype="multipart/form-data" id="updateProduct">
-                @method('PUT')
-                <div class="mb-3">
-                    <input type="text" class="form-control" name="title" id="title"
-                           placeholder="{{ __('Title') }}" value="">
-                </div>
-                <div class="mb-3">
-                    <input type="text" class="form-control" name="description" id="description"
-                           placeholder="{{ __('Description') }}" value="">
-                </div>
-                <div class="mb-3">
-                    <input type="number" class="form-control" name="price" id="price"
-                           placeholder="{{ __('Price') }}" value="">
-                </div>
-                <div class="mb-3">
-                    <input type="file" class="form-control" name="image" id="image"
-                           placeholder="">
-                </div>
-                <div>
-                    <button type="submit">{{ __('Update') }}</button>
-                </div>
-            </form>
+        <form action="" method="POST" enctype="multipart/form-data" id="updateProduct">
+            @method('PUT')
+            <div class="mb-3">
+                <input type="text" class="form-control" name="title" id="title"
+                       placeholder="{{ __('Title') }}" value="">
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" name="description" id="description"
+                       placeholder="{{ __('Description') }}" value="">
+            </div>
+            <div class="mb-3">
+                <input type="number" class="form-control" name="price" id="price"
+                       placeholder="{{ __('Price') }}" value="">
+            </div>
+            <div class="mb-3">
+                <input type="file" class="form-control" name="image" id="image"
+                       placeholder="">
+            </div>
+            <div>
+                <button type="submit">{{ __('Update') }}</button>
+            </div>
+        </form>
         <a href="#products" class="button">{{ __('Products list') }}</a>
     </div>
 
@@ -694,8 +706,9 @@
     <!-- The order page -->
     <div class="page order">
         <!-- The page where the order  is rendered -->
+        <h4> Order </h4>
         <table class="list"></table>
-        <a href="#orders" class="button">{{ __('Orders list') }}</a>
+        <a href="#orders" class="button">{{ __('Go to order list') }}</a>
     </div>
 </div>
 </body>
